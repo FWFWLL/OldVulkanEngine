@@ -2,12 +2,14 @@
 #define APPLICATION_HPP
 
 #include "Window.hpp"
+#include "Pipeline.hpp"
 
 namespace FFL {
 
 class Application {
 private:
-	Window window{WIDTH, HEIGHT, "Vulkan_C++"};
+	Window m_window{WIDTH, HEIGHT, "Vulkan_C++"};
+	Pipeline m_pipeline{"shaders/shader.vert.spv", "shaders/shader.frag.spv"};
 public:
 	static constexpr int WIDTH = 640;
 	static constexpr int HEIGHT = 640;

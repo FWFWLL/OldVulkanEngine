@@ -1,10 +1,11 @@
 #include "Application.hpp"
-#include "GLFW/glfw3.h"
+
+#include <GLFW/glfw3.h>
 
 namespace FFL {
 
 void Application::run() {
-	while(!window.shouldClose()) {
+	while(!m_window.shouldClose()) {
 		glfwPollEvents();
 	}
 }

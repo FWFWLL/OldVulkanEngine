@@ -41,10 +41,12 @@ $(BINDIR) $(OBJDIRS):
 
 # Vulkan SPIR-V compiled shader make targets
 
+SPVC := C:/VulkanSDK/$(VKVERSION)/Bin/glslc.exe
+
 shaders: shaders/shader.vert.spv shaders/shader.frag.spv
 
 shaders/shader.vert.spv: shaders/shader.vert
-	C:/VulkanSDK/$(VKVERSION)/Bin/glslc.exe $^ -o $@
+	$(SPVC) $^ -o $@
 
 shaders/shader.frag.spv: shaders/shader.frag
-	C:/VulkanSDK/$(VKVERSION)/Bin/glslc.exe $^ -o $@
+	$(SPVC) $^ -o $@

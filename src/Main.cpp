@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 int main() {
-	FFL::Application app{};
+	FFL::Application app;
 
 	try {
 		app.run();
