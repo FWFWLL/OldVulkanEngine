@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-#include <GLFW/glfw3.h>
+#include <stdexcept>
 
 namespace FFL {
 
@@ -19,6 +19,12 @@ void Window::initWindow() {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
+}
+
+void Window::createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface) {
+	if(glfwCreateWindowSurface(p_instance, m_window, nullptr, p_surface) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create window surface!");
+	}
 }
 
 } // FFL

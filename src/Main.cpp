@@ -1,8 +1,6 @@
 #include "Application.hpp"
 
-#include <cstdlib>
 #include <iostream>
-#include <stdexcept>
 
 int main() {
 	FFL::Application app;
