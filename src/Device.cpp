@@ -80,7 +80,7 @@ void Device::createInstance() {
 		createInfo.ppEnabledLayerNames = m_validationLayers.data();
 
 		populateDebugMessengerCreateInfo(debugCreateInfo);
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+		createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo);
 	} else {
 		createInfo.enabledLayerCount = 0;
 
@@ -93,7 +93,6 @@ void Device::createInstance() {
 
 	hasGLFWRequiredInstanceExtensions();
 }
-
 
 bool Device::checkValidationLayerSupport() {
 	uint32_t layerCount;
@@ -134,6 +133,15 @@ std::vector<const char*> Device::getRequiredExtensions() {
 	return extensions;
 }
 
+void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo) {
+	p_createInfo = {};
+	p_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	p_createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	p_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	p_createInfo.pfnUserCallback = debugCallback;
+	p_createInfo.pUserData = nullptr; // Optional
+}
+
 void Device::hasGLFWRequiredInstanceExtensions() {
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -167,15 +175,6 @@ void Device::setupDebugMessenger() {
 	if(CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
-}
-
-void Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo) {
-	p_createInfo = {};
-	p_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	p_createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	p_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	p_createInfo.pfnUserCallback = debugCallback;
-	p_createInfo.pUserData = nullptr; // Optional
 }
 
 void Device::createSurface() {

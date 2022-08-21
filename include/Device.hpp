@@ -26,9 +26,11 @@ public:
 	Device(Window& p_window);
 	~Device();
 
-	// Delete copy and move
+	// Delete copy-constructor
 	Device(const Device&) = delete;
 	void operator=(const Device&) = delete;
+
+	// Delete move-constructor
 	Device(Device&&) = delete;
 	Device &operator=(Device&&) = delete;
 public:
@@ -59,10 +61,10 @@ private:
 	void createInstance();
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo);
 	void hasGLFWRequiredInstanceExtensions();
 
 	void setupDebugMessenger();
-	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo);
 
 	void createSurface();
 
