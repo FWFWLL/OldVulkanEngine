@@ -13,7 +13,6 @@ namespace FFL {
 struct PipelineConfigInfo {
 	VkViewport viewport;
 	VkRect2D scissor;
-	VkPipelineViewportStateCreateInfo viewportInfo;
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 	VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -32,7 +31,7 @@ public:
 
 	// Delete copy-constructors
 	Pipeline(const Pipeline&) = delete;
-	void operator=(const Pipeline&) = delete;
+	Pipeline& operator=(const Pipeline&) = delete;
 private:
 	Device& m_device; // Unsafe
 	VkPipeline m_graphicsPipeline;
@@ -45,6 +44,8 @@ private:
 	void createShaderModule(const std::vector<char>& p_code, VkShaderModule* p_shaderModule);
 public:
 	static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t p_w, uint32_t p_h);
+
+	void bind(VkCommandBuffer p_commandBuffer);
 };
 
 }

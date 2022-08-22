@@ -39,14 +39,18 @@ $(BINDIR) $(OBJDIRS):
 
 -include $(OBJ:.o=.d)
 
-# Vulkan SPIR-V compiled shader make targets
+# make shader targets
+GLSLC := C:/VulkanSDK/$(VKVERSION)/Bin/glslc.exe
 
-SPVC := C:/VulkanSDK/$(VKVERSION)/Bin/glslc.exe
+SHADERDIR := shaders
 
-shaders: shaders/shader.vert.spv shaders/shader.frag.spv
+VSRC := $(shell find $(SHADERDIR) -type f -name "*.vert")
+FSRC := $(shell find $(SHADERDIR) -type f -name "*.frag")
 
-shaders/shader.vert.spv: shaders/shader.vert
-	$(SPVC) $^ -o $@
+VOBJ := $(patsubst %.vert, %.vert.spv, $(VSRC))
+FOBJ := $(patsubst %.frag, %.frag.spv, $(FSRC))
 
-shaders/shader.frag.spv: shaders/shader.frag
-	$(SPVC) $^ -o $@
+shaders: $(VOBJ) $(FOBJ)
+
+%.spv: %
+	$(GLSLC) $< -o $@

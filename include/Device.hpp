@@ -1,7 +1,7 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
-#include <Window.hpp>
+#include "Window.hpp"
 
 #include <optional>
 #include <vector>
@@ -28,22 +28,12 @@ public:
 
 	// Delete copy-constructor
 	Device(const Device&) = delete;
-	void operator=(const Device&) = delete;
+	Device& operator=(const Device&) = delete;
 
 	// Delete move-constructor
 	Device(Device&&) = delete;
-	Device &operator=(Device&&) = delete;
-public:
-#ifdef NDEBUG
-	const bool enableValidationLayers = false;
-#else
-	const bool enableValidationLayers = true;
-#endif
-	VkPhysicalDeviceProperties properties;
+	Device& operator=(Device&&) = delete;
 private:
-	const std::vector<const char*> m_validationLayers = {"VK_LAYER_KHRONOS_validation"};
-	const std::vector<const char*> m_deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
 	Window& m_window;
 
 	VkInstance m_instance;
@@ -57,26 +47,32 @@ private:
 	VkQueue m_presentQueue;
 
 	VkCommandPool m_commandPool;
+
+	const std::vector<const char*> m_validationLayers = {"VK_LAYER_KHRONOS_validation"};
+	const std::vector<const char*> m_deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+public:
+#ifdef NDEBUG
+	const bool enableValidationLayers = false;
+#else
+	const bool enableValidationLayers = true;
+#endif
+	VkPhysicalDeviceProperties properties;
 private:
 	void createInstance();
+	void setupDebugMessenger();
+	void createSurface();
+	void pickPhysicalDevice();
+	void createLogicalDevice();
+	void createCommandPool();
+
 	bool checkValidationLayerSupport();
 	std::vector<const char*> getRequiredExtensions();
 	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& p_createInfo);
 	void hasGLFWRequiredInstanceExtensions();
-
-	void setupDebugMessenger();
-
-	void createSurface();
-
-	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice p_device);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice p_device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice p_device);
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice p_device);
-
-	void createLogicalDevice();
-
-	void createCommandPool();
 public:
 	uint32_t findMemoryType(uint32_t p_typeFilter, VkMemoryPropertyFlags p_properties);
 	VkFormat findSupportedFormat(const std::vector<VkFormat>& p_candidates, VkImageTiling p_tiling, VkFormatFeatureFlags p_features);
@@ -92,9 +88,8 @@ public:
 	VkQueue graphicsQueue() {return m_graphicsQueue;}
 	VkQueue presentQueue() {return m_presentQueue;}
 	VkCommandPool getCommandPool() {return m_commandPool;}
-
-	SwapChainSupportDetails getSwapChainSupport() {return querySwapChainSupport(m_physicalDevice);}
 	QueueFamilyIndices findPhysicalQueueFamilies() {return findQueueFamilies(m_physicalDevice);}
+	SwapChainSupportDetails getSwapChainSupport() {return querySwapChainSupport(m_physicalDevice);}
 };
 
 } // FFL

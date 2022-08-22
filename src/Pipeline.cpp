@@ -74,13 +74,20 @@ void Pipeline::createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, co
 	vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 	vertexInputInfo.pVertexBindingDescriptions = nullptr;
 
+	VkPipelineViewportStateCreateInfo viewportInfo = {};
+	viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportInfo.viewportCount = 1;
+	viewportInfo.pViewports = &p_configInfo.viewport;
+	viewportInfo.scissorCount = 1;
+	viewportInfo.pScissors = &p_configInfo.scissor;
+
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
 	pipelineInfo.pStages = shaderStages;
 	pipelineInfo.pVertexInputState = &vertexInputInfo;
 	pipelineInfo.pInputAssemblyState = &p_configInfo.inputAssemblyInfo;
-	pipelineInfo.pViewportState = &p_configInfo.viewportInfo;
+	pipelineInfo.pViewportState = &viewportInfo;
 	pipelineInfo.pRasterizationState = &p_configInfo.rasterizationInfo;
 	pipelineInfo.pMultisampleState = &p_configInfo.multisampleInfo;
 	pipelineInfo.pColorBlendState = &p_configInfo.colorBlendInfo;
@@ -121,12 +128,6 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(uint32_t p_w, uint32_t p_
 
 	configInfo.scissor.offset = {0, 0};
 	configInfo.scissor.extent = {p_w, p_h};
-
-	configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	configInfo.viewportInfo.viewportCount = 1;
-	configInfo.viewportInfo.pViewports = &configInfo.viewport;
-	configInfo.viewportInfo.scissorCount = 1;
-	configInfo.viewportInfo.pScissors = &configInfo.scissor;
 
 	configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -183,6 +184,10 @@ PipelineConfigInfo Pipeline::defaultPipelineConfigInfo(uint32_t p_w, uint32_t p_
 	configInfo.depthStencilInfo.back = {}; // Optional
 
 	return configInfo;
+}
+
+void Pipeline::bind(VkCommandBuffer p_commandBuffer) {
+	vkCmdBindPipeline(p_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
 }
 
 } // FFL

@@ -4,7 +4,7 @@
 
 namespace FFL {
 
-Window::Window(int p_w, int p_h, std::string p_title) : m_width{p_w}, m_height{p_h}, m_title{p_title} {
+Window::Window(uint32_t p_w, uint32_t p_h, std::string p_title) : m_width{p_w}, m_height{p_h}, m_title{p_title} {
 	initWindow();
 }
 

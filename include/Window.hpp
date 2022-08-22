@@ -1,6 +1,7 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+#include <cstdint>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -10,25 +11,26 @@ namespace FFL {
 
 class Window {
 public:
-	Window(int p_w, int p_h, std::string p_title);
+	Window(uint32_t p_w, uint32_t p_h, std::string p_title);
 	~Window();
 
 	// Delete copy-constructors
 	Window(const Window&) = delete;
-	Window &operator=(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 private:
-	GLFWwindow* m_window;
-	
-	const int m_width;
-	const int m_height;
+	const uint32_t m_width;
+	const uint32_t m_height;
 
 	std::string m_title;
+
+	GLFWwindow* m_window;
 private:
 	void initWindow();
 public:
-	bool shouldClose() {return glfwWindowShouldClose(m_window);}
-
 	void createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface);
+public:
+	bool shouldClose() {return glfwWindowShouldClose(m_window);}
+	VkExtent2D getExtent() {return {m_width, m_height};}
 };
 
 } // FFL
