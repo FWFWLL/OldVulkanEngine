@@ -1,5 +1,7 @@
 #include "Device.hpp"
 
+#include <vulkan/vulkan_core.h>
+
 #include <cstring>
 #include <iostream>
 #include <set>
@@ -14,7 +16,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 }
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance p_instance, const VkDebugUtilsMessengerCreateInfoEXT* p_createInfo, const VkAllocationCallbacks* p_allocator, VkDebugUtilsMessengerEXT* p_debugMessenger) {
-	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(p_instance, "vkCreateDebugUtilsMessengerEXT");
+	auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(p_instance, "vkCreateDebugUtilsMessengerEXT"));
 
 	if(func != nullptr) {
 		return func(p_instance, p_createInfo, p_allocator, p_debugMessenger);

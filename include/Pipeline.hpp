@@ -2,19 +2,33 @@
 #define PIPELINE_HPP
 
 #include "Device.hpp"
-#include "vulkan/vulkan_core.h"
+
+#include <vulkan/vulkan_core.h>
 
 #include <string>
 #include <vector>
 
 namespace FFL {
 
-struct PipelineConfigInfo {};
+struct PipelineConfigInfo {
+	VkViewport viewport;
+	VkRect2D scissor;
+	VkPipelineViewportStateCreateInfo viewportInfo;
+	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+	VkPipelineMultisampleStateCreateInfo multisampleInfo;
+	VkPipelineColorBlendAttachmentState colorBlendAttachment;
+	VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+	VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+	VkPipelineLayout pipelineLayout = nullptr;
+	VkRenderPass renderPass = nullptr;
+	uint32_t subpass = 0;
+};
 
 class Pipeline {
 public:
 	Pipeline(Device& p_device, const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
-	~Pipeline() {}
+	~Pipeline();
 
 	// Delete copy-constructors
 	Pipeline(const Pipeline&) = delete;
