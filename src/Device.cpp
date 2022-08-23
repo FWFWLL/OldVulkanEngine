@@ -1,11 +1,8 @@
 #include "Device.hpp"
 
-#include <vulkan/vulkan_core.h>
-
 #include <cstring>
 #include <iostream>
 #include <set>
-#include <stdexcept>
 #include <unordered_set>
 
 namespace FFL {

@@ -6,10 +6,7 @@
 #include "SwapChain.hpp"
 #include "Pipeline.hpp"
 
-#include <vulkan/vulkan_core.h>
-
 #include <memory>
-#include <vector>
 
 namespace FFL {
 
@@ -18,14 +15,16 @@ public:
 	Application();
 	~Application();
 
+	// Delete copy-constructor
 	Application(const Application&) = delete;
 	Application& operator=(const Application&) = delete;
 private:
 	Window m_window = {SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
 	Device m_device = {m_window};
 	SwapChain m_swapChain = {m_device, m_window.getExtent()};
-	std::unique_ptr<Pipeline> m_pipeline;
+
 	VkPipelineLayout m_pipelineLayout;
+	std::unique_ptr<Pipeline> m_pipeline;
 	std::vector<VkCommandBuffer> m_commandBuffers;
 public:
 	static const uint32_t SCREEN_WIDTH = 640;

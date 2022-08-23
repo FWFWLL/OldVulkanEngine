@@ -1,10 +1,11 @@
 #include "Application.hpp"
+
 #include "Pipeline.hpp"
 
-#include <cstdint>
 #include <vulkan/vulkan_core.h>
 
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 

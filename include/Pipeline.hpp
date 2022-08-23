@@ -3,11 +3,6 @@
 
 #include "Device.hpp"
 
-#include <vulkan/vulkan_core.h>
-
-#include <string>
-#include <vector>
-
 namespace FFL {
 
 struct PipelineConfigInfo {

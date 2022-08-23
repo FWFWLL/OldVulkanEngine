@@ -1,15 +1,7 @@
 #include "SwapChain.hpp"
 
-#include <vulkan/vulkan_core.h>
-
-#include <algorithm>
 #include <array>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
 #include <iostream>
-#include <limits>
-#include <set>
 #include <stdexcept>
 
 namespace FFL {
@@ -17,8 +9,8 @@ namespace FFL {
 SwapChain::SwapChain(Device& p_device, VkExtent2D p_windowExtent) : m_device{p_device}, m_windowExtent{p_windowExtent} {
 	createSwapChain();
 	createImageViews();
-	createDepthResources();
 	createRenderPass();
+	createDepthResources();
 	createFramebuffers();
 	createSyncObjects();
 }
@@ -283,15 +275,15 @@ VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfac
 	return p_availableFormats[0];
 }
 
-VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>&) {
+VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& p_availablePresentModes) {
 	std::cout << "Present Mode: ";
 
-	// for(const auto& availablePresentMode : p_availablePresentModes) {
-	// 	if(availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-	// 		std::cout << "Mailbox" << std::endl;
-	// 		return availablePresentMode;
-	// 	}
-	// }
+	for(const auto& availablePresentMode : p_availablePresentModes) {
+		if(availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+			std::cout << "Mailbox" << std::endl;
+			return availablePresentMode;
+		}
+	}
 
 	// for(const auto& availablePresentMode : p_availablePresentModes) {
 	// 	if(availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
