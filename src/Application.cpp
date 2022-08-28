@@ -2,23 +2,30 @@
 
 #include "Pipeline.hpp"
 
-#include <vulkan/vulkan_core.h>
-
 #include <array>
-#include <cstdint>
-#include <memory>
 #include <stdexcept>
 
 namespace FFL {
 
 Application::Application() {
+	loadModels();
 	createPipelineLayout();
 	createPipeline();
-	createCommandBufffers();
+	createCommandBuffers();
 }
 
 Application::~Application() {
 	vkDestroyPipelineLayout(m_device.device(), m_pipelineLayout, nullptr);
+}
+
+void Application::loadModels() {
+	std::vector<Model::Vertex> vertices {
+		{{0.0f, -0.5f}},
+		{{0.5f, 0.5f}},
+		{{-0.5f, 0.5f}}
+	};
+
+	m_model = std::make_unique<Model>(m_device, vertices);
 }
 
 void Application::createPipelineLayout() {
@@ -42,7 +49,7 @@ void Application::createPipeline() {
 	m_pipeline = std::make_unique<Pipeline>(m_device, pipelineConfig, "shaders/shader.vert.spv", "shaders/shader.frag.spv");
 }
 
-void Application::createCommandBufffers() {
+void Application::createCommandBuffers() {
 	m_commandBuffers.resize(m_swapChain.imageCount());
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -79,8 +86,8 @@ void Application::createCommandBufffers() {
 		vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		m_pipeline->bind(m_commandBuffers[i]);
-
-		vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+		m_model->bind(m_commandBuffers[i]);
+		m_model->draw(m_commandBuffers[i]);
 
 		vkCmdEndRenderPass(m_commandBuffers[i]);
 

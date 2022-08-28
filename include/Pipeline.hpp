@@ -12,7 +12,6 @@ struct PipelineConfigInfo {
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 	VkPipelineMultisampleStateCreateInfo multisampleInfo;
 	VkPipelineColorBlendAttachmentState colorBlendAttachment;
-	VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 	VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 	VkPipelineLayout pipelineLayout = nullptr;
 	VkRenderPass renderPass = nullptr;

@@ -5,6 +5,7 @@
 #include "Device.hpp"
 #include "SwapChain.hpp"
 #include "Pipeline.hpp"
+#include "Model.hpp"
 
 #include <memory>
 
@@ -26,13 +27,16 @@ private:
 	VkPipelineLayout m_pipelineLayout;
 	std::unique_ptr<Pipeline> m_pipeline;
 	std::vector<VkCommandBuffer> m_commandBuffers;
+
+	std::unique_ptr<Model> m_model;
 public:
 	static const uint32_t SCREEN_WIDTH = 640;
 	static const uint32_t SCREEN_HEIGHT = 640;
 private:
+	void loadModels();
 	void createPipelineLayout();
 	void createPipeline();
-	void createCommandBufffers();
+	void createCommandBuffers();
 	void drawFrame();
 public:
 	void run();
