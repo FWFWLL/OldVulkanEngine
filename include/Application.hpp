@@ -22,7 +22,7 @@ public:
 private:
 	Window m_window = {SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
 	Device m_device = {m_window};
-	SwapChain m_swapChain = {m_device, m_window.getExtent()};
+	std::unique_ptr<SwapChain> m_swapChain;
 
 	VkPipelineLayout m_pipelineLayout;
 	std::unique_ptr<Pipeline> m_pipeline;
@@ -37,7 +37,10 @@ private:
 	void createPipelineLayout();
 	void createPipeline();
 	void createCommandBuffers();
+	void freeCommandBuffers();
 	void drawFrame();
+	void recreateSwapChain();
+	void recordCommandBuffer(int p_imageIndex);
 public:
 	void run();
 };

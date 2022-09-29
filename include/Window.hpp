@@ -4,6 +4,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <cstdint>
 #include <string>
 
 namespace FFL {
@@ -17,19 +18,26 @@ public:
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 private:
-	const uint32_t m_width;
-	const uint32_t m_height;
+	uint32_t m_width;
+	uint32_t m_height;
+
+	bool m_framebufferResized = false;
 
 	std::string m_title;
 
 	GLFWwindow* m_window;
 private:
+	static void framebufferResizeCallback(GLFWwindow* p_window, int p_width, int p_height);
+
 	void initWindow();
 public:
 	void createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface);
 public:
 	bool shouldClose() {return glfwWindowShouldClose(m_window);}
 	VkExtent2D getExtent() {return {m_width, m_height};}
+	bool wasWindowResized() {return m_framebufferResized;}
+
+	void resetWindowResizedFlag() {m_framebufferResized = false;}
 };
 
 } // FFL

@@ -1,12 +1,25 @@
 #include "SwapChain.hpp"
+#include "vulkan/vulkan_core.h"
 
 #include <array>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 namespace FFL {
 
 SwapChain::SwapChain(Device& p_device, VkExtent2D p_windowExtent) : m_device{p_device}, m_windowExtent{p_windowExtent} {
+	init();
+}
+
+SwapChain::SwapChain(Device& p_device, VkExtent2D p_windowExtent, std::shared_ptr<SwapChain> p_previous) : m_device{p_device}, m_windowExtent{p_windowExtent}, m_oldSwapChain{p_previous} {
+	init();
+
+	// Clean up old SwapChain
+	m_oldSwapChain = nullptr;
+}
+
+void SwapChain::init() {
 	createSwapChain();
 	createImageViews();
 	createRenderPass();
@@ -85,7 +98,7 @@ void SwapChain::createSwapChain() {
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	createInfo.oldSwapchain = m_oldSwapChain == nullptr ? VK_NULL_HANDLE : m_oldSwapChain->m_swapChain;
 
 	if(vkCreateSwapchainKHR(m_device.device(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");

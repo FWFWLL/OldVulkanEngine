@@ -2,17 +2,25 @@
 #define PIPELINE_HPP
 
 #include "Device.hpp"
+#include "vulkan/vulkan_core.h"
+#include <vector>
 
 namespace FFL {
 
 struct PipelineConfigInfo {
-	VkViewport viewport;
-	VkRect2D scissor;
+	// Delete copy-constructors
+	PipelineConfigInfo(const PipelineConfigInfo&) = delete;
+	PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
+
+	VkPipelineViewportStateCreateInfo viewportInfo;
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 	VkPipelineMultisampleStateCreateInfo multisampleInfo;
 	VkPipelineColorBlendAttachmentState colorBlendAttachment;
+	VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 	VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+	std::vector<VkDynamicState> dynamicStateEnables;
+	VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 	VkPipelineLayout pipelineLayout = nullptr;
 	VkRenderPass renderPass = nullptr;
 	uint32_t subpass = 0;
@@ -37,7 +45,7 @@ private:
 	void createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
 	void createShaderModule(const std::vector<char>& p_code, VkShaderModule* p_shaderModule);
 public:
-	static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t p_w, uint32_t p_h);
+	static void defaultPipelineConfigInfo(PipelineConfigInfo& p_configInfo);
 
 	void bind(VkCommandBuffer p_commandBuffer);
 };
