@@ -3,6 +3,9 @@
 
 #include "Device.hpp"
 
+// Libraries
+#include <vulkan/vulkan_core.h>
+
 // STD
 #include <memory>
 
@@ -17,13 +20,30 @@ public:
 	// Delete copy-constructor
 	SwapChain(const SwapChain&) = delete;
 	SwapChain& operator=(const SwapChain&) = delete;
-public:
+
 	static constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
+
+	VkFramebuffer getFramebuffer(int p_index) const {return m_swapChainFramebuffers[p_index];}
+	VkRenderPass getRenderPass() const {return m_renderPass;}
+	VkImageView getImageView(int p_index) const {return m_swapChainImageViews[p_index];}
+	size_t imageCount() const {return m_swapChainImages.size();}
+	VkFormat getSwapChainImageFormat() const {return m_swapChainImageFormat;}
+	VkExtent2D getSwapChainExtent() const {return m_swapChainExtent;}
+	uint32_t width() const {return m_swapChainExtent.width;}
+	uint32_t height() const {return m_swapChainExtent.height;}
+	float extentAspectRatio() const {return static_cast<float>(width()) / static_cast<float>(height());}
+	bool compareSwapFormats(const SwapChain& p_swapChain) const {return p_swapChain.m_swapChainDepthFormat == m_swapChainDepthFormat && p_swapChain.m_swapChainImageFormat == m_swapChainImageFormat;}
+
+	VkResult acquireNextImage(uint32_t* p_imageIndex);
+	VkFormat findDepthFormat();
+	VkResult submitCommandBuffers(const VkCommandBuffer* p_buffers, uint32_t* p_imageIndex);
+
 private:
 	Device& m_device;
 	VkExtent2D m_windowExtent;
 
 	VkFormat m_swapChainImageFormat;
+	VkFormat m_swapChainDepthFormat;
 	VkExtent2D m_swapChainExtent;
 
 	std::vector<VkFramebuffer> m_swapChainFramebuffers;
@@ -43,7 +63,7 @@ private:
 	std::vector<VkFence> m_inFlightFences;
 	std::vector<VkFence> m_imagesInFlight;
 	uint32_t m_currentFrame = 0;
-private:
+
 	void init();
 	void createSwapChain();
 	void createImageViews();
@@ -55,20 +75,6 @@ private:
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& p_availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& p_capabilities);
-public:
-	VkResult acquireNextImage(uint32_t* p_imageIndex);
-	VkFormat findDepthFormat();
-	VkResult submitCommandBuffers(const VkCommandBuffer* p_buffers, uint32_t* p_imageIndex);
-public:
-	VkFramebuffer getFramebuffer(int p_index) {return m_swapChainFramebuffers[p_index];}
-	VkRenderPass getRenderPass() {return m_renderPass;}
-	VkImageView getImageView(int p_index) {return m_swapChainImageViews[p_index];}
-	size_t imageCount() {return m_swapChainImages.size();}
-	VkFormat getSwapChainImageFormat() {return m_swapChainImageFormat;}
-	VkExtent2D getSwapChainExtent() {return m_swapChainExtent;}
-	uint32_t width() {return m_swapChainExtent.width;}
-	uint32_t height() {return m_swapChainExtent.height;}
-	float extentAspectRatio() {return static_cast<float>(width()) / static_cast<float>(height());}
 };
 
 } // FFL
