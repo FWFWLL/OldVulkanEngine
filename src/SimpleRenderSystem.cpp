@@ -23,8 +23,7 @@
 namespace FFL {
 
 struct SimplePushConstantData {
-	glm::mat2 transform{1.0f};
-	glm::vec2 offset;
+	glm::mat4 transform{1.0f};
 	alignas(16) glm::vec3 color;
 };
 
@@ -70,11 +69,11 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std:
 	m_pipeline->bind(p_commandBuffer);
 
 	for(auto& obj : p_gameObjects) {
-		obj.transform2D.rotation = glm::mod(obj.transform2D.rotation + 0.001f, glm::two_pi<float>());
+		obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.001f, glm::two_pi<float>());
+		obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.0005f, glm::two_pi<float>());
 
 		SimplePushConstantData push = {};
-		push.transform = obj.transform2D.mat2();
-		push.offset = obj.transform2D.translation;
+		push.transform = obj.transform.mat4();
 		push.color = obj.color;
 
 		vkCmdPushConstants(p_commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);

@@ -2,10 +2,12 @@
 #define GAMEOBJECT_HPP
 
 #include "Model.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
 
 // Libraries
 #include <glm/fwd.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // STD
 #include <memory>
@@ -13,26 +15,23 @@
 
 namespace FFL {
 
-struct Transform2DComponent {
-	glm::vec2 translation = {};
-	glm::vec2 scale = {1.0f, 1.0f};
-	float rotation;
+struct TransformComponent {
+	glm::vec3 translation = {};
+	glm::vec3 scale = {1.0f, 1.0f, 1.0f};
+	glm::vec3 rotation = {};
+	
+	// Matrix corresponds to translate * R_y * R_x * R_z * scale transformation
+	// Rotation convention uses tait-bryan angles with axis order Y(1), X(2), Z(3)
+	glm::mat4 mat4() {
+		glm::mat4 transform = glm::translate(glm::mat4{1.0f}, translation);
 
-	glm::mat2 mat2() {
-		const float s = glm::sin(rotation);
-		const float c = glm::cos(rotation);
+		transform = glm::rotate(transform, rotation.y, {0.0f, 1.0f, 0.0f});
+		transform = glm::rotate(transform, rotation.x, {1.0f, 0.0f, 0.0f});
+		transform = glm::rotate(transform, rotation.z, {0.0f, 0.0f, 1.0f});
 
-		glm::mat2 rotationMatrix = {
-			{c, s},
-			{-s, c},
-		};
+		transform = glm::scale(transform, scale);
 
-		glm::mat2 scaleMatrix = {
-			{scale.x, 0.0f},
-			{0.0f, scale.y},
-		};
-
-		return rotationMatrix * scaleMatrix;
+		return transform;
 	}
 };
 
@@ -50,7 +49,7 @@ public:
 
 	std::shared_ptr<Model> model = {};
 	glm::vec3 color = {};
-	Transform2DComponent transform2D = {};
+	TransformComponent transform = {};
 
 	static GameObject createGameObject() {
 		static id_t currentId = 0;

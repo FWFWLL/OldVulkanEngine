@@ -48,23 +48,74 @@ void Application::run() {
 	vkDeviceWaitIdle(m_device.device());
 }
 
-void Application::loadGameObjects() {
-	std::vector<Model::Vertex> vertices {
-		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+// Temporary helper function, creates a 1^3 cube centered at offset
+std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
+	std::vector<Model::Vertex> vertices{
+		// left face (white)
+		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+		{{-0.5f, -0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+		{{-0.5f, 0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+
+		// right face (yellow)
+		{{0.5f, -0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+		{{0.5f, -0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+		{{0.5f, -0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+
+		// top face (orange, remember y axis points down)
+		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+		{{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+		{{-0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+		{{0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+		{{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+
+		// bottom face (red)
+		{{-0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+		{{-0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+		{{-0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+		{{0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+
+		// nose face (blue)
+		{{-0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{-0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{-0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+
+		// tail face (green)
+		{{-0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{-0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{-0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
 	};
 
-	auto model = std::make_shared<Model>(m_device, vertices);
+	for (auto& v : vertices) {
+		v.position += p_offset;
+	}
 
-	auto triangle = GameObject::createGameObject();
-	triangle.model = model;
-	triangle.color = {0.1f, 0.8f, 0.1f};
-	triangle.transform2D.translation.x = 0.2f;
-	triangle.transform2D.scale = {2.0f, 0.5f};
-	triangle.transform2D.rotation = 0.25f * glm::two_pi<float>();
+	return std::make_unique<Model>(p_device, vertices);
+}
 
-	m_gameObjects.push_back(std::move(triangle));
+void Application::loadGameObjects() {
+	std::shared_ptr<Model> model = createCubeModel(m_device, {0.0f, 0.0f, 0.0f});
+
+	GameObject cube = GameObject::createGameObject();
+	cube.model = model;
+	cube.transform.translation = {0.0f, 0.0f, 0.5f};
+	cube.transform.scale = {0.5f, 0.5f, 0.5f};
+
+	m_gameObjects.push_back(std::move(cube));
 }
 
 } // FFL
