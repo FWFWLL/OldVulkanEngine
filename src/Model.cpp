@@ -1,6 +1,9 @@
 #include "Model.hpp"
-#include "vulkan/vulkan_core.h"
 
+// Libraries
+#include <vulkan/vulkan_core.h>
+
+// STD
 #include <cstddef>
 #include <cstring>
 

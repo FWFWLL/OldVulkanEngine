@@ -1,9 +1,11 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 
+// Libraries
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+// STD
 #include <cstdint>
 #include <string>
 

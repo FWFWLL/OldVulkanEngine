@@ -1,6 +1,9 @@
 #include "Window.hpp"
-#include "GLFW/glfw3.h"
 
+// Libraries
+#include <GLFW/glfw3.h>
+
+// STD
 #include <cstdint>
 #include <stdexcept>
 

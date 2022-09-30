@@ -2,7 +2,11 @@
 #define PIPELINE_HPP
 
 #include "Device.hpp"
-#include "vulkan/vulkan_core.h"
+
+// Libraries
+#include <vulkan/vulkan_core.h>
+
+// STD
 #include <vector>
 
 namespace FFL {

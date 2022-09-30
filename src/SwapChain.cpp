@@ -1,6 +1,9 @@
 #include "SwapChain.hpp"
-#include "vulkan/vulkan_core.h"
 
+// Libraries
+#include <vulkan/vulkan_core.h>
+
+// STD
 #include <array>
 #include <iostream>
 #include <memory>

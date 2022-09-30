@@ -1,10 +1,16 @@
 #include "Application.hpp"
-
-#include "GLFW/glfw3.h"
 #include "Pipeline.hpp"
 #include "SwapChain.hpp"
-#include "vulkan/vulkan_core.h"
 
+// Libraries
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
+
+// STD
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -13,6 +19,11 @@
 #include <utility>
 
 namespace FFL {
+
+struct SimplePushConstantData {
+	glm::vec2 offset;
+	alignas(16) glm::vec3 color;
+};
 
 Application::Application() {
 	loadModels();
@@ -36,12 +47,17 @@ void Application::loadModels() {
 }
 
 void Application::createPipelineLayout() {
+	VkPushConstantRange pushConstantRange = {};
+	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+	pushConstantRange.offset = 0;
+	pushConstantRange.size = sizeof(SimplePushConstantData);
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 0;
 	pipelineLayoutInfo.pSetLayouts = nullptr;
-	pipelineLayoutInfo.pushConstantRangeCount = 0;
-	pipelineLayoutInfo.pPushConstantRanges = nullptr;
+	pipelineLayoutInfo.pushConstantRangeCount = 1;
+	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
 	if(vkCreatePipelineLayout(m_device.device(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create pipeline layout!");
@@ -132,6 +148,9 @@ void Application::recreateSwapChain() {
 }
 
 void Application::recordCommandBuffer(int p_imageIndex) {
+	static int frame = 0;
+	frame = (frame + 1) % 10000;
+
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -140,7 +159,7 @@ void Application::recordCommandBuffer(int p_imageIndex) {
 	}
 
 	std::array<VkClearValue, 2> clearValues = {};
-	clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+	clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
 	clearValues[1].depthStencil = {1.0f, 0};
 
 	VkRenderPassBeginInfo renderPassInfo = {};
@@ -169,7 +188,16 @@ void Application::recordCommandBuffer(int p_imageIndex) {
 
 	m_pipeline->bind(m_commandBuffers[p_imageIndex]);
 	m_model->bind(m_commandBuffers[p_imageIndex]);
-	m_model->draw(m_commandBuffers[p_imageIndex]);
+
+	for(int i = 0; i < 4; i++) {
+		SimplePushConstantData push = {};
+		push.offset = {-0.5f + frame * 0.0002f, -0.4f + i * 0.25f};
+		push.color = {0.0f, 0.0f, 0.2f + 0.2f * i};
+
+		vkCmdPushConstants(m_commandBuffers[p_imageIndex], m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+
+		m_model->draw(m_commandBuffers[p_imageIndex]);
+	}
 
 	vkCmdEndRenderPass(m_commandBuffers[p_imageIndex]);
 
