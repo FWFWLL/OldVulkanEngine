@@ -5,7 +5,7 @@
 #include "Device.hpp"
 #include "SwapChain.hpp"
 #include "Pipeline.hpp"
-#include "Model.hpp"
+#include "GameObject.hpp"
 
 // STD
 #include <memory>
@@ -24,17 +24,15 @@ private:
 	Window m_window = {SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
 	Device m_device = {m_window};
 	std::unique_ptr<SwapChain> m_swapChain;
-
-	VkPipelineLayout m_pipelineLayout;
 	std::unique_ptr<Pipeline> m_pipeline;
+	VkPipelineLayout m_pipelineLayout;
 	std::vector<VkCommandBuffer> m_commandBuffers;
-
-	std::unique_ptr<Model> m_model;
+	std::vector<GameObject> m_gameObjects;
 public:
 	static const uint32_t SCREEN_WIDTH = 640;
 	static const uint32_t SCREEN_HEIGHT = 640;
 private:
-	void loadModels();
+	void loadGameObjects();
 	void createPipelineLayout();
 	void createPipeline();
 	void createCommandBuffers();
@@ -42,6 +40,7 @@ private:
 	void drawFrame();
 	void recreateSwapChain();
 	void recordCommandBuffer(int p_imageIndex);
+	void renderGameObjects(VkCommandBuffer p_commandBuffer);
 public:
 	void run();
 };
