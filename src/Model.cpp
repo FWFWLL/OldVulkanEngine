@@ -45,9 +45,9 @@ Model::~Model() {
 void Model::createVertexBuffers(const std::vector<Vertex>& p_vertices) {
 	m_vertexCount = static_cast<uint32_t>(p_vertices.size());
 	assert(m_vertexCount >= 3 && "Vertex count must be at least 3");
-	
+
 	VkDeviceSize bufferSize = sizeof(p_vertices[0]) * m_vertexCount;
-	
+
 	m_device.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vertexBuffer, m_vertexBufferMemory);
 
 	void* data;

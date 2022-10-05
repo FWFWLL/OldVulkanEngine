@@ -100,7 +100,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
 	};
 
-	for (auto& v : vertices) {
+	for(auto& v : vertices) {
 		v.position += p_offset;
 	}
 

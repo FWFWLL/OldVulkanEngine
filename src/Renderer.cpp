@@ -59,7 +59,7 @@ void Renderer::endFrame() {
 	if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("failed to record command buffer!");
 	}
-	
+
 	VkResult result = m_swapChain->submitCommandBuffers(&commandBuffer, &m_currentImageIndex);
 	if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_window.wasWindowResized()) {
 		m_window.resetWindowResizedFlag();
@@ -140,7 +140,7 @@ void Renderer::recreateSwapChain() {
 	}
 
 	vkDeviceWaitIdle(m_device.device());
-	
+
 	if(m_swapChain == nullptr) {
 		m_swapChain = std::make_unique<SwapChain>(m_device, extent);
 	} else {

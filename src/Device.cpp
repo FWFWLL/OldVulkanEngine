@@ -54,7 +54,7 @@ Device::~Device() {
 }
 
 void Device::createInstance() {
-	if (enableValidationLayers && !checkValidationLayerSupport()) {
+	if(enableValidationLayers && !checkValidationLayerSupport()) {
 		throw std::runtime_error("validation layers requested, but not available!");
 	}
 
@@ -487,11 +487,11 @@ void Device::createImageWithInfo(const VkImageCreateInfo& p_imageInfo, VkMemoryP
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, p_properties);
 
-	if (vkAllocateMemory(m_device, &allocInfo, nullptr, &p_imageMemory) != VK_SUCCESS) {
+	if(vkAllocateMemory(m_device, &allocInfo, nullptr, &p_imageMemory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate image memory!");
 	}
 
-	if (vkBindImageMemory(m_device, p_image, p_imageMemory, 0) != VK_SUCCESS) {
+	if(vkBindImageMemory(m_device, p_image, p_imageMemory, 0) != VK_SUCCESS) {
 		throw std::runtime_error("failed to bind image memory!");
 	}
 }
