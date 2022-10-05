@@ -496,4 +496,4 @@ void Device::createImageWithInfo(const VkImageCreateInfo& p_imageInfo, VkMemoryP
 	}
 }
 
-}
+} // FFL

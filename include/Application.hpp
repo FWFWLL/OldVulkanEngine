@@ -36,6 +36,6 @@ class Application {
 		void loadGameObjects();
 };
 
-}
+} // FFL
 
 #endif // APPLICATION_HPP

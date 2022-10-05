@@ -54,6 +54,6 @@ class Pipeline {
 		void createShaderModule(const std::vector<char>& p_code, VkShaderModule* p_shaderModule);
 };
 
-}
+} // FFL
 
 #endif // PIPELINE_HPP

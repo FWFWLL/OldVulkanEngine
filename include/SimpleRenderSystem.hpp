@@ -34,6 +34,6 @@ class SimpleRenderSystem {
 		void createPipeline(VkRenderPass p_renderPass);
 };
 
-}
+} // FFL
 
 #endif // SIMPLERENDERSYSTEM_HPP

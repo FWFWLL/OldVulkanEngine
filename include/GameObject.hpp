@@ -83,6 +83,6 @@ class GameObject {
 		id_t m_id;
 };
 
-}
+} // FFL
 
 #endif // GAMEOBJECT_HPP
