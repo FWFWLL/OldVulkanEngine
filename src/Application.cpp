@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include "Camera.hpp"
 #include "Device.hpp"
 #include "GameObject.hpp"
 #include "Pipeline.hpp"
@@ -13,6 +14,7 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/fwd.hpp>
 #include <GLFW/glfw3.h>
+#include <glm/trigonometric.hpp>
 #include <vulkan/vulkan_core.h>
 
 // STD
@@ -33,13 +35,18 @@ Application::~Application() {}
 
 void Application::run() {
 	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass()};
+	Camera camera{};
 
 	while(!m_window.shouldClose()) {
 		glfwPollEvents();
 
+		float aspect = m_renderer.getAspectRatio();
+		// camera.setOrthographicProjection(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
+		camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+
 		if(VkCommandBuffer commandBuffer = m_renderer.beginFrame()) {
 			m_renderer.beginSwapChainRenderPass(commandBuffer);
-			simpleRenderSystem.renderGameObjects(commandBuffer, m_gameObjects);
+			simpleRenderSystem.renderGameObjects(commandBuffer, m_gameObjects, camera);
 			m_renderer.endSwapChainRenderPass(commandBuffer);
 			m_renderer.endFrame();
 		}
@@ -84,20 +91,20 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
 
 		// nose face (blue)
-		{{-0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
-		{{0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
-		{{-0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
-		{{-0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
-		{{0.5f, -0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
-		{{0.5f, 0.5f, 00.5f}, {0.1f, 0.1f, 0.8f}},
+		{{-0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+		{{-0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+		{{-0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+		{{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
 
 		// tail face (green)
-		{{-0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
-		{{0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
-		{{-0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
-		{{-0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
-		{{0.5f, -0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
-		{{0.5f, 0.5f, -00.5f}, {0.1f, 0.8f, 0.1f}},
+		{{-0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+		{{-0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+		{{-0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+		{{0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
 	};
 
 	for(auto& v : vertices) {
@@ -112,7 +119,7 @@ void Application::loadGameObjects() {
 
 	GameObject cube = GameObject::createGameObject();
 	cube.model = model;
-	cube.transform.translation = {0.0f, 0.0f, 0.5f};
+	cube.transform.translation = {0.0f, 0.0f, 2.5f};
 	cube.transform.scale = {0.5f, 0.5f, 0.5f};
 
 	m_gameObjects.push_back(std::move(cube));

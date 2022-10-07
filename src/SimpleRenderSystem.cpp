@@ -1,4 +1,5 @@
 #include "SimpleRenderSystem.hpp"
+#include "Camera.hpp"
 #include "GameObject.hpp"
 
 // Libraries
@@ -65,7 +66,7 @@ void SimpleRenderSystem::createPipeline(VkRenderPass p_renderPass) {
 	m_pipeline = std::make_unique<Pipeline>(m_device, pipelineConfig, "shaders/shader.vert.spv", "shaders/shader.frag.spv");
 }
 
-void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects) {
+void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera) {
 	m_pipeline->bind(p_commandBuffer);
 
 	for(auto& obj : p_gameObjects) {
@@ -73,7 +74,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std:
 		obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.0005f, glm::two_pi<float>());
 
 		SimplePushConstantData push = {};
-		push.transform = obj.transform.mat4();
+		push.transform = p_camera.getProjection() * obj.transform.mat4();
 		push.color = obj.color;
 
 		vkCmdPushConstants(p_commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);

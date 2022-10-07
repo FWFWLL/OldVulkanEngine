@@ -1,6 +1,7 @@
 #ifndef SIMPLERENDERSYSTEM_HPP
 #define SIMPLERENDERSYSTEM_HPP
 
+#include "Camera.hpp"
 #include "Device.hpp"
 #include "GameObject.hpp"
 #include "Pipeline.hpp"
@@ -23,7 +24,7 @@ class SimpleRenderSystem {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-		void renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects);
+		void renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera);
 	private:
 		Device& m_device;
 
