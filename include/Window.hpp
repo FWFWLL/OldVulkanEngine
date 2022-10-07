@@ -24,6 +24,7 @@ class Window {
 		VkExtent2D getExtent() {return {m_width, m_height};}
 		bool wasWindowResized() {return m_framebufferResized;}
 		void resetWindowResizedFlag() {m_framebufferResized = false;}
+		GLFWwindow* getGLFWwindow() const {return m_window;}
 
 		void createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface);
 	private:

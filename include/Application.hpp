@@ -8,6 +8,7 @@
 #include "Renderer.hpp"
 
 // STD
+#include <chrono>
 #include <memory>
 #include <vector>
 
