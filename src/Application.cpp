@@ -58,7 +58,7 @@ void Application::run() {
 // Temporary helper function, creates a 1^3 cube centered at offset
 std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 	std::vector<Model::Vertex> vertices{
-		// left face (white)
+		// Left face (white)
 		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
 		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
 		{{-0.5f, -0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
@@ -66,7 +66,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{-0.5f, 0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
 		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
 
-		// right face (yellow)
+		// Right face (yellow)
 		{{0.5f, -0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
 		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
 		{{0.5f, -0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
@@ -74,7 +74,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, 0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
 		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
 
-		// top face (orange, remember y axis points down)
+		// Top face (orange, remember y axis points down)
 		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
 		{{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
 		{{-0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
@@ -82,7 +82,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
 		{{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
 
-		// bottom face (red)
+		// Bottom face (red)
 		{{-0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
 		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
 		{{-0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
@@ -90,7 +90,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
 		{{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
 
-		// nose face (blue)
+		// Nose face (blue)
 		{{-0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
 		{{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
 		{{-0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
@@ -98,7 +98,7 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
 		{{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
 
-		// tail face (green)
+		// Tail face (green)
 		{{-0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
 		{{0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
 		{{-0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
