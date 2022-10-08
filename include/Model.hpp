@@ -8,34 +8,50 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+// STD
+#include <cstdint>
+#include <vector>
+
 namespace FFL {
 
 class Model {
-	public:
-		struct Vertex {
-			glm::vec3 position;
-			glm::vec3 color;
+public:
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec3 color;
 
-			static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
-			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-		};
+		static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
+		static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+	};
 
-		Model(Device& p_device, const std::vector<Vertex>& p_vertices);
-		~Model();
+	struct Builder {
+		std::vector<Vertex> vertices = {};
+		std::vector<uint32_t> indices = {};
+	};
 
-		// Delete copy-constructors
-		Model(const Model&) = delete;
-		Model& operator=(const Model&) = delete;
+	Model(Device& p_device, const Model::Builder& p_builder);
+	~Model();
 
-		void bind(VkCommandBuffer p_commandBuffer);
-		void draw(VkCommandBuffer p_commandBuffer);
-	private:
-		Device& m_device;
-		VkDeviceMemory m_vertexBufferMemory;
-		VkBuffer m_vertexBuffer;
-		uint32_t m_vertexCount;
+	// Delete copy-constructors
+	Model(const Model&) = delete;
+	Model& operator=(const Model&) = delete;
 
-		void createVertexBuffers(const std::vector<Vertex>& p_vertices);
+	void bind(VkCommandBuffer p_commandBuffer);
+	void draw(VkCommandBuffer p_commandBuffer);
+private:
+	Device& m_device;
+
+	VkBuffer m_vertexBuffer;
+	VkDeviceMemory m_vertexBufferMemory;
+	uint32_t m_vertexCount;
+
+	bool m_hasIndexBuffer = false;
+	VkBuffer m_indexBuffer;
+	VkDeviceMemory m_indexBufferMemory;
+	uint32_t m_indexCount;
+
+	void createVertexBuffers(const std::vector<Vertex>& p_vertices);
+	void createIndexBuffers(const std::vector<uint32_t>& p_indices);
 };
 
 } // FFL
