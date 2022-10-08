@@ -24,12 +24,12 @@ public:
 		static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 	};
 
-	struct Builder {
+	struct Data {
 		std::vector<Vertex> vertices = {};
 		std::vector<uint32_t> indices = {};
 	};
 
-	Model(Device& p_device, const Model::Builder& p_builder);
+	Model(Device& p_device, const Model::Data& p_builder);
 	~Model();
 
 	// Delete copy-constructors
@@ -51,7 +51,7 @@ private:
 	uint32_t m_indexCount;
 
 	void createVertexBuffers(const std::vector<Vertex>& p_vertices);
-	void createIndexBuffers(const std::vector<uint32_t>& p_indices);
+	void createIndexBuffer(const std::vector<uint32_t>& p_indices);
 };
 
 } // FFL

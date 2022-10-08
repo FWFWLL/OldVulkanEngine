@@ -16,23 +16,23 @@
 namespace FFL {
 
 class SimpleRenderSystem {
-	public:
-		SimpleRenderSystem(Device& p_device, VkRenderPass p_renderPass);
-		~SimpleRenderSystem();
+public:
+	SimpleRenderSystem(Device& p_device, VkRenderPass p_renderPass);
+	~SimpleRenderSystem();
 
-		// Delete copy-constructor
-		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
-		SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
+	// Delete copy-constructor
+	SimpleRenderSystem(const SimpleRenderSystem&) = delete;
+	SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-		void renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera);
-	private:
-		Device& m_device;
+	void renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera);
+private:
+	Device& m_device;
 
-		VkPipelineLayout m_pipelineLayout;
-		std::unique_ptr<Pipeline> m_pipeline;
+	VkPipelineLayout m_pipelineLayout;
+	std::unique_ptr<Pipeline> m_pipeline;
 
-		void createPipelineLayout();
-		void createPipeline(VkRenderPass p_renderPass);
+	void createPipelineLayout();
+	void createPipeline(VkRenderPass p_renderPass);
 };
 
 } // FFL

@@ -34,9 +34,9 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDescri
 	return attributeDescriptions;
 }
 
-Model::Model(Device& p_device, const Model::Builder& p_builder) : m_device{p_device} {
+Model::Model(Device& p_device, const Model::Data& p_builder) : m_device{p_device} {
 	createVertexBuffers(p_builder.vertices);
-	createIndexBuffers(p_builder.indices);
+	createIndexBuffer(p_builder.indices);
 }
 
 Model::~Model() {
@@ -57,7 +57,7 @@ void Model::createVertexBuffers(const std::vector<Vertex>& p_vertices) {
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	m_device.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	m_device.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
 	vkMapMemory(m_device.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -72,7 +72,7 @@ void Model::createVertexBuffers(const std::vector<Vertex>& p_vertices) {
 }
 
 
-void Model::createIndexBuffers(const std::vector<uint32_t>& p_indices) {
+void Model::createIndexBuffer(const std::vector<uint32_t>& p_indices) {
 	m_indexCount = static_cast<uint32_t>(p_indices.size());
 	m_hasIndexBuffer = m_indexCount > 0;
 
@@ -84,7 +84,7 @@ void Model::createIndexBuffers(const std::vector<uint32_t>& p_indices) {
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	m_device.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	m_device.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
 	vkMapMemory(m_device.device(), stagingBufferMemory, 0, bufferSize, 0, &data);

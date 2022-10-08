@@ -33,15 +33,15 @@ struct TransformComponent {
 		const float c3 = glm::cos(rotation.z);
 		return glm::mat4 {
 			{
-				scale.x * (c1 * c3 + s1 * s2 * s3),
+				scale.x * (c1 * c3 + s1* s2 * s3),
 				scale.x * (c2 * s3),
-				scale.x * (c1 * s2 * s3 - c3 * s1),
+				scale.x * (c1* s2 * s3 - c3 * s1),
 				0.0f,
 			},
 			{
-				scale.y * (c3 * s1 * s2 - c1 * s3),
+				scale.y * (c3* s1 * s2 - c1 * s3),
 				scale.y * (c2 * c3),
-				scale.y * (c1 * c3 * s2 + s1 * s3),
+				scale.y * (c1* c3 * s2 + s1 * s3),
 				0.0f,
 			},
 			{
@@ -56,31 +56,31 @@ struct TransformComponent {
 };
 
 class GameObject {
-	public:
-		using id_t = unsigned int;
+public:
+	using id_t = unsigned int;
 
-		// Delete copy-constructor
-		GameObject(const GameObject&) = delete;
-		GameObject& operator=(const GameObject&) = delete;
+	// Delete copy-constructor
+	GameObject(const GameObject&) = delete;
+	GameObject& operator=(const GameObject&) = delete;
 
-		// Use default move-constructor
-		GameObject(GameObject&&) = default;
-		GameObject& operator=(GameObject&&) = default;
+	// Use default move-constructor
+	GameObject(GameObject&&) = default;
+	GameObject& operator=(GameObject&&) = default;
 
-		std::shared_ptr<Model> model = {};
-		glm::vec3 color = {};
-		TransformComponent transform = {};
+	std::shared_ptr<Model> model = {};
+	glm::vec3 color = {};
+	TransformComponent transform = {};
 
-		static GameObject createGameObject() {
-			static id_t currentId = 0;
-			return GameObject{currentId++};
-		}
+	static GameObject createGameObject() {
+		static id_t currentId = 0;
+		return GameObject{currentId++};
+	}
 
-		id_t getId() const {return m_id;}
-	private:
-		GameObject(id_t p_objId) : m_id{p_objId} {}
+	id_t getId() const {return m_id;}
+private:
+	GameObject(id_t p_objId) : m_id{p_objId} {}
 
-		id_t m_id;
+	id_t m_id;
 };
 
 } // FFL

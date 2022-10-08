@@ -12,34 +12,35 @@
 namespace FFL {
 
 class Window {
-	public:
-		Window(uint32_t p_w, uint32_t p_h, std::string p_title);
-		~Window();
+public:
+	Window(uint32_t p_w, uint32_t p_h, std::string p_title);
+	~Window();
 
-		// Delete copy-constructors
-		Window(const Window&) = delete;
-		Window& operator=(const Window&) = delete;
+	// Delete copy-constructors
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 
-		bool shouldClose() {return glfwWindowShouldClose(m_window);}
-		VkExtent2D getExtent() {return {m_width, m_height};}
-		bool wasWindowResized() {return m_framebufferResized;}
-		void resetWindowResizedFlag() {m_framebufferResized = false;}
-		GLFWwindow* getGLFWwindow() const {return m_window;}
+	bool shouldClose() const {return glfwWindowShouldClose(m_window);}
+	VkExtent2D getExtent() const {return {m_width, m_height};}
+	bool wasWindowResized() const {return m_framebufferResized;}
+	GLFWwindow* getGLFWwindow() const {return m_window;}
 
-		void createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface);
-	private:
-		uint32_t m_width;
-		uint32_t m_height;
+	void resetWindowResizedFlag() {m_framebufferResized = false;}
 
-		bool m_framebufferResized = false;
+	void createWindowSurface(VkInstance p_instance, VkSurfaceKHR* p_surface);
+private:
+	uint32_t m_width;
+	uint32_t m_height;
 
-		std::string m_title;
+	bool m_framebufferResized = false;
 
-		GLFWwindow* m_window;
+	std::string m_title;
 
-		static void framebufferResizeCallback(GLFWwindow* p_window, int p_width, int p_height);
+	GLFWwindow* m_window;
 
-		void initWindow();
+	static void framebufferResizeCallback(GLFWwindow* p_window, int p_width, int p_height);
+
+	void initWindow();
 };
 
 } // FFL

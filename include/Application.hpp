@@ -15,26 +15,26 @@
 namespace FFL {
 
 class Application {
-	public:
-		static constexpr uint32_t SCREEN_WIDTH = 640;
-		static constexpr uint32_t SCREEN_HEIGHT = 640;
+public:
+	static constexpr uint32_t SCREEN_WIDTH = 640;
+	static constexpr uint32_t SCREEN_HEIGHT = 640;
 
-		Application();
-		~Application();
+	Application();
+	~Application();
 
-		// Delete copy-constructor
-		Application(const Application&) = delete;
-		Application& operator=(const Application&) = delete;
+	// Delete copy-constructor
+	Application(const Application&) = delete;
+	Application& operator=(const Application&) = delete;
 
-		void run();
-	private:
-		Window m_window{SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
-		Device m_device{m_window};
-		Renderer m_renderer{m_window, m_device};
+	void run();
+private:
+	Window m_window{SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
+	Device m_device{m_window};
+	Renderer m_renderer{m_window, m_device};
 
-		std::vector<GameObject> m_gameObjects;
+	std::vector<GameObject> m_gameObjects;
 
-		void loadGameObjects();
+	void loadGameObjects();
 };
 
 } // FFL

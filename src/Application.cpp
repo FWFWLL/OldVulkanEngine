@@ -72,9 +72,9 @@ void Application::run() {
 
 // Temporary helper function, creates a 1^3 cube centered at offset
 std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
-	Model::Builder modelBuilder = {};
+	Model::Data modelData = {};
 
-	modelBuilder.vertices = {
+	modelData.vertices = {
 		// Left face (white)
 		{{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
 		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
@@ -112,11 +112,11 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		{{0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
 	};
 
-	for(auto& v : modelBuilder.vertices) {
+	for(auto& v : modelData.vertices) {
 		v.position += p_offset;
 	}
 
-	modelBuilder.indices = {
+	modelData.indices = {
 		// Left face
 		0, 1, 2,
 		0, 3, 1,
@@ -141,7 +141,8 @@ std::unique_ptr<Model> createCubeModel(Device& p_device, glm::vec3 p_offset) {
 		20, 21, 22,
 		20, 23, 21,
 	};
-	return std::make_unique<Model>(p_device, modelBuilder);
+
+	return std::make_unique<Model>(p_device, modelData);
 }
 
 void Application::loadGameObjects() {

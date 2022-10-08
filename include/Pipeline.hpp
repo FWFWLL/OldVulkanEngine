@@ -31,27 +31,27 @@ struct PipelineConfigInfo {
 };
 
 class Pipeline {
-	public:
-		Pipeline(Device& p_device, const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
-		~Pipeline();
+public:
+	Pipeline(Device& p_device, const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
+	~Pipeline();
 
-		// Delete copy-constructors
-		Pipeline(const Pipeline&) = delete;
-		Pipeline& operator=(const Pipeline&) = delete;
+	// Delete copy-constructors
+	Pipeline(const Pipeline&) = delete;
+	Pipeline& operator=(const Pipeline&) = delete;
 
-		static void defaultPipelineConfigInfo(PipelineConfigInfo& p_configInfo);
+	static void defaultPipelineConfigInfo(PipelineConfigInfo& p_configInfo);
 
-		void bind(VkCommandBuffer p_commandBuffer);
-	private:
-		Device& m_device;
-		VkPipeline m_graphicsPipeline;
-		VkShaderModule m_vertShaderModule;
-		VkShaderModule m_fragShaderModule;
+	void bind(VkCommandBuffer p_commandBuffer);
+private:
+	Device& m_device;
+	VkPipeline m_graphicsPipeline;
+	VkShaderModule m_vertShaderModule;
+	VkShaderModule m_fragShaderModule;
 
-		static std::vector<char> readFile(const std::string& p_filePath);
+	static std::vector<char> readFile(const std::string& p_filePath);
 
-		void createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
-		void createShaderModule(const std::vector<char>& p_code, VkShaderModule* p_shaderModule);
+	void createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath);
+	void createShaderModule(const std::vector<char>& p_code, VkShaderModule* p_shaderModule);
 };
 
 } // FFL
