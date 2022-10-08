@@ -1,12 +1,36 @@
 #include "Model.hpp"
+#include "Utils.hpp"
 
 // Libraries
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tinyobjloader/tiny_obj_loader.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 #include <vulkan/vulkan_core.h>
 
 // STD
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <unordered_map>
+
+namespace std {
+
+template<>
+struct hash<FFL::Model::Vertex> {
+	size_t operator()(FFL::Model::Vertex const& p_vertex) const {
+		size_t seed = 0;
+
+		FFL::hashCombine(seed, p_vertex.position, p_vertex.color, p_vertex.normal, p_vertex.uv);
+
+		return seed;
+	}
+};
+
+}
 
 namespace FFL {
 
@@ -34,7 +58,69 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDescri
 	return attributeDescriptions;
 }
 
-Model::Model(Device& p_device, const Model::Data& p_builder) : m_device{p_device} {
+void Model::Builder::loadModel(const std::string& p_filePath) {
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, p_filePath.c_str())) {
+		throw std::runtime_error(warn + err);
+	}
+
+	vertices.clear();
+	indices.clear();
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+	for(const tinyobj::shape_t& shape : shapes) {
+		for(const tinyobj::index_t& index : shape.mesh.indices) {
+			Vertex vertex = {};
+
+			if(index.vertex_index >= 0) {
+				vertex.position = {
+					attrib.vertices[3 * index.vertex_index + 0],
+					attrib.vertices[3 * index.vertex_index + 1],
+					attrib.vertices[3 * index.vertex_index + 2],
+				};
+
+				size_t colorIndex = 3 * index.vertex_index + 2;
+				if(colorIndex < attrib.colors.size()) {
+					vertex.color = {
+						attrib.colors[colorIndex - 2],
+						attrib.colors[colorIndex - 1],
+						attrib.colors[colorIndex - 0],
+					};
+				} else {
+					vertex.color = {1.0f, 1.0f, 1.0f}; // Set default color
+				}
+			}
+
+			if(index.normal_index >= 0) {
+				vertex.normal = {
+					attrib.normals[3 * index.normal_index + 0],
+					attrib.normals[3 * index.normal_index + 1],
+					attrib.normals[3 * index.normal_index + 2],
+				};
+			}
+
+			if(index.texcoord_index >= 0) {
+				vertex.uv = {
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					attrib.texcoords[2 * index.texcoord_index + 1],
+				};
+			}
+			
+			if(uniqueVertices.count(vertex) == 0) {
+				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+				vertices.push_back(vertex);
+			}
+
+			indices.push_back(uniqueVertices[vertex]);
+		}
+	}
+}
+
+Model::Model(Device& p_device, const Model::Builder& p_builder) : m_device{p_device} {
 	createVertexBuffers(p_builder.vertices);
 	createIndexBuffer(p_builder.indices);
 }
@@ -47,6 +133,15 @@ Model::~Model() {
 		vkDestroyBuffer(m_device.device(), m_indexBuffer, nullptr);
 		vkFreeMemory(m_device.device(), m_indexBufferMemory, nullptr);
 	}
+}
+
+std::unique_ptr<Model> Model::createModelFromFile(Device& p_device, const std::string& p_filePath) {
+	Builder builder = {};
+	builder.loadModel(p_filePath);
+
+	std::cout << "Vertex Count: " << builder.vertices.size() << '\n';
+
+	return std::make_unique<Model>(p_device, builder);
 }
 
 void Model::createVertexBuffers(const std::vector<Vertex>& p_vertices) {

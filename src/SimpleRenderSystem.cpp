@@ -71,7 +71,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std:
 
 	glm::mat4 projectionView = p_camera.getProjection() * p_camera.getView();
 
-	for(auto& obj : p_gameObjects) {
+	for(GameObject& obj : p_gameObjects) {
 		SimplePushConstantData push = {};
 		push.transform = projectionView * obj.transform.mat4();
 		push.color = obj.color;

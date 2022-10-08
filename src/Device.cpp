@@ -1,5 +1,8 @@
 #include "Device.hpp"
 
+// Libraries
+#include "vulkan/vulkan_core.h"
+
 // STD
 #include <cstring>
 #include <iostream>
@@ -70,7 +73,7 @@ void Device::createInstance() {
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	auto extensions = getRequiredExtensions();
+	std::vector<const char*> extensions = getRequiredExtensions();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -205,7 +208,7 @@ bool Device::checkValidationLayerSupport() {
 	for(const char* layerName : m_validationLayers) {
 		bool layerFound = false;
 
-		for(const auto& layerProperties : availableLayers) {
+		for(const VkLayerProperties& layerProperties : availableLayers) {
 			if(strcmp(layerName, layerProperties.layerName) == 0) {
 				layerFound = true;
 				break;
@@ -252,13 +255,13 @@ void Device::hasGLFWRequiredInstanceExtensions() {
 
 	std::cout << "Available Extensions:" << std::endl;
 	std::unordered_set<std::string> available;
-	for(const auto& extension : extensions) {
+	for(const VkExtensionProperties& extension : extensions) {
 		std::cout << '\t' << extension.extensionName << '\n';
 		available.insert(extension.extensionName);
 	}
 
 	std::cout << "Required Extensions:" << std::endl;
-	auto requiredExtensions = getRequiredExtensions();
+	std::vector<const char*> requiredExtensions = getRequiredExtensions();
 	for(const auto& required : requiredExtensions) {
 		std::cout << '\t' << required << '\n';
 		if(available.find(required) == available.end()) {
@@ -294,7 +297,7 @@ QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice p_device) {
 	vkGetPhysicalDeviceQueueFamilyProperties(p_device, &queueFamilyCount, queueFamilies.data());
 
 	uint32_t i = 0;
-	for(const auto& queueFamily : queueFamilies) {
+	for(const VkQueueFamilyProperties& queueFamily : queueFamilies) {
 		if(queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indices.graphicsFamily = i;
 		}
@@ -325,7 +328,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice p_device) {
 
 	std::set<std::string> requiredExtensions(m_deviceExtensions.begin(), m_deviceExtensions.end());
 
-	for(const auto& extension : availableExtensions) {
+	for(const VkExtensionProperties& extension : availableExtensions) {
 		requiredExtensions.erase(extension.extensionName);
 	}
 

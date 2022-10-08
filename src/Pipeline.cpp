@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <cassert>
+#include <vector>
 
 namespace FFL {
 
@@ -44,8 +45,8 @@ void Pipeline::createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, co
 	assert(p_configInfo.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipelineLayout provided in p_configInfo");
 	assert(p_configInfo.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline: no renderPass provided in p_configInfo");
 
-	auto vertShaderCode = readFile(p_vertPath);
-	auto fragShaderCode = readFile(p_fragPath);
+	std::vector<char> vertShaderCode = readFile(p_vertPath);
+	std::vector<char> fragShaderCode = readFile(p_fragPath);
 
 	std::cout << "Vertex Shader Code Size: " << vertShaderCode.size() << '\n';
 	std::cout << "Fragment Shader Code Size: " << fragShaderCode.size() << '\n';
@@ -69,8 +70,8 @@ void Pipeline::createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, co
 	shaderStages[1].pNext = nullptr;
 	shaderStages[1].pSpecializationInfo = nullptr;
 
-	auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
-	auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions = Model::Vertex::getBindingDescriptions();
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions = Model::Vertex::getAttributeDescriptions();
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

@@ -71,7 +71,7 @@ VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* p_buffers, uint3
 	presentInfo.pImageIndices = p_imageIndex;
 	presentInfo.pResults = nullptr;
 
-	auto result = vkQueuePresentKHR(m_device.presentQueue(), &presentInfo);
+	VkResult result = vkQueuePresentKHR(m_device.presentQueue(), &presentInfo);
 
 	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
@@ -79,7 +79,7 @@ VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* p_buffers, uint3
 }
 
 SwapChain::~SwapChain() {
-	for(auto imageView : m_swapChainImageViews) {
+	for(VkImageView imageView : m_swapChainImageViews) {
 		vkDestroyImageView(m_device.device(), imageView, nullptr);
 	}
 
@@ -96,7 +96,7 @@ SwapChain::~SwapChain() {
 		vkFreeMemory(m_device.device(), m_depthImageMemories[i], nullptr);
 	}
 
-	for(auto framebuffer : m_swapChainFramebuffers) {
+	for(VkFramebuffer framebuffer : m_swapChainFramebuffers) {
 		vkDestroyFramebuffer(m_device.device(), framebuffer, nullptr);
 	}
 
@@ -339,7 +339,7 @@ void SwapChain::createSyncObjects() {
 }
 
 VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& p_availableFormats) {
-	for(const auto& availableFormat : p_availableFormats) {
+	for(const VkSurfaceFormatKHR& availableFormat : p_availableFormats) {
 		if(availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
 			return availableFormat;
 		}
@@ -351,14 +351,14 @@ VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfac
 VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& p_availablePresentModes) {
 	std::cout << "Present Mode: ";
 
-	for(const auto& availablePresentMode : p_availablePresentModes) {
+	for(const VkPresentModeKHR& availablePresentMode : p_availablePresentModes) {
 		if(availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
 			std::cout << "Mailbox" << std::endl;
 			return availablePresentMode;
 		}
 	}
 
-	for(const auto& availablePresentMode : p_availablePresentModes) {
+	for(const VkPresentModeKHR& availablePresentMode : p_availablePresentModes) {
 		if(availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
 			std::cout << "Immediate" << std::endl;
 			return availablePresentMode;
