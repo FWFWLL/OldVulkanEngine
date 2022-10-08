@@ -1,9 +1,4 @@
 #include "KeyboardMovementController.hpp"
-#include "GLFW/glfw3.h"
-#include "glm/common.hpp"
-#include "glm/geometric.hpp"
-#include "glm/gtc/constants.hpp"
-#include <limits>
 
 namespace FFL {
 

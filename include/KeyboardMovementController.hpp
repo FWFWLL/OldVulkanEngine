@@ -23,9 +23,9 @@ class KeyboardMovementController {
 
 		void moveInPlaneXZ(GLFWwindow* p_window, float p_deltaTime, GameObject& p_gameObject);
 
-		KeyMappings keys{};
-		float moveSpeed{3.0f};
-		float lookSpeed{1.5f};
+		KeyMappings keys = {};
+		float moveSpeed = 3.0f;
+		float lookSpeed = 1.5f;
 };
 
 }
