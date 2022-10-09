@@ -25,7 +25,7 @@ namespace FFL {
 
 struct SimplePushConstantData {
 	glm::mat4 transform{1.0f};
-	alignas(16) glm::vec3 color;
+	glm::mat4 normalMatrix{1.0f};
 };
 
 SimpleRenderSystem::SimpleRenderSystem(Device& p_device, VkRenderPass p_renderPass) : m_device{p_device} {
@@ -63,7 +63,7 @@ void SimpleRenderSystem::createPipeline(VkRenderPass p_renderPass) {
 	pipelineConfig.renderPass = p_renderPass;
 	pipelineConfig.pipelineLayout = m_pipelineLayout;
 
-	m_pipeline = std::make_unique<Pipeline>(m_device, pipelineConfig, "shaders/shader.vert.spv", "shaders/shader.frag.spv");
+	m_pipeline = std::make_unique<Pipeline>(m_device, pipelineConfig, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
 }
 
 void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera) {
@@ -72,9 +72,11 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std:
 	glm::mat4 projectionView = p_camera.getProjection() * p_camera.getView();
 
 	for(GameObject& obj : p_gameObjects) {
+		glm::mat4 normalMatrix = obj.transform.mat4();
+
 		SimplePushConstantData push = {};
-		push.transform = projectionView * obj.transform.mat4();
-		push.color = obj.color;
+		push.transform = projectionView * normalMatrix;
+		push.normalMatrix = normalMatrix;
 
 		vkCmdPushConstants(p_commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
