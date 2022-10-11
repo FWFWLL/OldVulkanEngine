@@ -1,6 +1,8 @@
 #include "Application.hpp"
+#include "Buffer.hpp"
 #include "Camera.hpp"
 #include "Device.hpp"
+#include "FrameInfo.hpp"
 #include "GameObject.hpp"
 #include "KeyboardMovementController.hpp"
 #include "Pipeline.hpp"
@@ -11,6 +13,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/common.hpp>
+#include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/fwd.hpp>
@@ -29,6 +32,11 @@
 
 namespace FFL {
 
+struct GlobalUniformBufferObject {
+	glm::mat4 projectionView{1.0f};
+	glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+};
+
 Application::Application() {
 	loadGameObjects();
 }
@@ -36,6 +44,9 @@ Application::Application() {
 Application::~Application() {}
 
 void Application::run() {
+	Buffer globalUniformBufferObjectBuffer{m_device, sizeof(GlobalUniformBufferObject), SwapChain::MAX_FRAMES_IN_FLIGHT, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment};
+	globalUniformBufferObjectBuffer.map();
+
 	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass()};
 	Camera camera{};
 
@@ -60,8 +71,18 @@ void Application::run() {
 		camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
 		if(VkCommandBuffer commandBuffer = m_renderer.beginFrame()) {
+			int frameIndex = m_renderer.getFrameIndex();
+			FrameInfo frameInfo = {frameIndex, deltaTime, commandBuffer, camera};
+
+			// Update
+			GlobalUniformBufferObject uniformBufferObject{};
+			uniformBufferObject.projectionView = camera.getProjection() * camera.getView();
+			globalUniformBufferObjectBuffer.writeToIndex(&uniformBufferObject, frameIndex);
+			globalUniformBufferObjectBuffer.flushIndex(frameIndex);
+
+			// Render
 			m_renderer.beginSwapChainRenderPass(commandBuffer);
-			simpleRenderSystem.renderGameObjects(commandBuffer, m_gameObjects, camera);
+			simpleRenderSystem.renderGameObjects(frameInfo, m_gameObjects);
 			m_renderer.endSwapChainRenderPass(commandBuffer);
 			m_renderer.endFrame();
 		}

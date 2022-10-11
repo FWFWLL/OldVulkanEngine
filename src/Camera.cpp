@@ -86,4 +86,4 @@ void Camera::setViewYXZ(glm::vec3 p_position, glm::vec3 p_rotation) {
 	m_viewMatrix[3][2] = -glm::dot(w, p_position);
 }
 
-}
+} // FFL

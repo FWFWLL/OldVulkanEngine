@@ -3,6 +3,7 @@
 
 #include "Camera.hpp"
 #include "Device.hpp"
+#include "FrameInfo.hpp"
 #include "GameObject.hpp"
 #include "Pipeline.hpp"
 
@@ -24,7 +25,7 @@ public:
 	SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 	SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-	void renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera);
+	void renderGameObjects(FrameInfo& p_frameInfo, std::vector<GameObject>& p_gameObjects);
 private:
 	Device& m_device;
 

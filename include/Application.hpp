@@ -1,11 +1,11 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "Window.hpp"
 #include "Device.hpp"
-#include "SwapChain.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
+#include "SwapChain.hpp"
+#include "Window.hpp"
 
 // STD
 #include <chrono>

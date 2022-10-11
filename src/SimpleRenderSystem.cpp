@@ -1,5 +1,6 @@
 #include "SimpleRenderSystem.hpp"
 #include "Camera.hpp"
+#include "FrameInfo.hpp"
 #include "GameObject.hpp"
 
 // Libraries
@@ -66,10 +67,10 @@ void SimpleRenderSystem::createPipeline(VkRenderPass p_renderPass) {
 	m_pipeline = std::make_unique<Pipeline>(m_device, pipelineConfig, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
 }
 
-void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std::vector<GameObject>& p_gameObjects, const Camera& p_camera) {
-	m_pipeline->bind(p_commandBuffer);
+void SimpleRenderSystem::renderGameObjects(FrameInfo& p_frameInfo, std::vector<GameObject>& p_gameObjects) {
+	m_pipeline->bind(p_frameInfo.commandBuffer);
 
-	glm::mat4 projectionView = p_camera.getProjection() * p_camera.getView();
+	glm::mat4 projectionView = p_frameInfo.camera.getProjection() * p_frameInfo.camera.getView();
 
 	for(GameObject& obj : p_gameObjects) {
 		glm::mat4 normalMatrix = obj.transform.mat4();
@@ -78,10 +79,10 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer p_commandBuffer, std:
 		push.transform = projectionView * normalMatrix;
 		push.normalMatrix = normalMatrix;
 
-		vkCmdPushConstants(p_commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+		vkCmdPushConstants(p_frameInfo.commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
 
-		obj.model->bind(p_commandBuffer);
-		obj.model->draw(p_commandBuffer);
+		obj.model->bind(p_frameInfo.commandBuffer);
+		obj.model->draw(p_frameInfo.commandBuffer);
 	}
 }
 
