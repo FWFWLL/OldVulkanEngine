@@ -8,6 +8,7 @@
 #include "Pipeline.hpp"
 #include "SimpleRenderSystem.hpp"
 #include "SwapChain.hpp"
+#include <vector>
 
 // Libraries
 #define GLM_FORCE_RADIANS
@@ -44,8 +45,11 @@ Application::Application() {
 Application::~Application() {}
 
 void Application::run() {
-	Buffer globalUniformBufferObjectBuffer{m_device, sizeof(GlobalUniformBufferObject), SwapChain::MAX_FRAMES_IN_FLIGHT, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment};
-	globalUniformBufferObjectBuffer.map();
+	std::vector<std::unique_ptr<Buffer>> uniformBufferObjectBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
+	for(size_t i = 0; i < uniformBufferObjectBuffers.size(); i++) {
+		uniformBufferObjectBuffers[i] = std::make_unique<Buffer>(m_device, sizeof(GlobalUniformBufferObject), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment);
+		uniformBufferObjectBuffers[i]->map();
+	}
 
 	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass()};
 	Camera camera{};
@@ -77,8 +81,8 @@ void Application::run() {
 			// Update
 			GlobalUniformBufferObject uniformBufferObject{};
 			uniformBufferObject.projectionView = camera.getProjection() * camera.getView();
-			globalUniformBufferObjectBuffer.writeToIndex(&uniformBufferObject, frameIndex);
-			globalUniformBufferObjectBuffer.flushIndex(frameIndex);
+			uniformBufferObjectBuffers[frameIndex]->writeToBuffer(&uniformBufferObject);
+			uniformBufferObjectBuffers[frameIndex]->flush();
 
 			// Render
 			m_renderer.beginSwapChainRenderPass(commandBuffer);
