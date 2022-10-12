@@ -1,14 +1,13 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
+#include "Descriptors.hpp"
 #include "Device.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
-#include "SwapChain.hpp"
 #include "Window.hpp"
 
 // STD
-#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -31,6 +30,9 @@ private:
 	Window m_window{SCREEN_WIDTH, SCREEN_HEIGHT, "Vulkan_C++"};
 	Device m_device{m_window};
 	Renderer m_renderer{m_window, m_device};
+
+	// NOTE: Order of declarations matters
+	std::unique_ptr<DescriptorPool> m_globalPool = {};
 
 	std::vector<GameObject> m_gameObjects;
 

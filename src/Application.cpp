@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include "Buffer.hpp"
 #include "Camera.hpp"
+#include "Descriptors.hpp"
 #include "Device.hpp"
 #include "FrameInfo.hpp"
 #include "GameObject.hpp"
@@ -8,7 +9,6 @@
 #include "Pipeline.hpp"
 #include "SimpleRenderSystem.hpp"
 #include "SwapChain.hpp"
-#include <vector>
 
 // Libraries
 #define GLM_FORCE_RADIANS
@@ -30,15 +30,21 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace FFL {
 
 struct GlobalUniformBufferObject {
-	glm::mat4 projectionView{1.0f};
-	glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+	alignas(16) glm::mat4 projectionView{1.0f};
+	alignas(16) glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
 };
 
 Application::Application() {
+	m_globalPool = DescriptorPool::Builder(m_device)
+		.setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
+		.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+		.build();
+
 	loadGameObjects();
 }
 
@@ -46,12 +52,24 @@ Application::~Application() {}
 
 void Application::run() {
 	std::vector<std::unique_ptr<Buffer>> uniformBufferObjectBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
-	for(size_t i = 0; i < uniformBufferObjectBuffers.size(); i++) {
-		uniformBufferObjectBuffers[i] = std::make_unique<Buffer>(m_device, sizeof(GlobalUniformBufferObject), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment);
-		uniformBufferObjectBuffers[i]->map();
+	for(std::unique_ptr<Buffer>& ubo : uniformBufferObjectBuffers) {
+		ubo = std::make_unique<Buffer>(m_device, sizeof(GlobalUniformBufferObject), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment);
+		ubo->map();
 	}
 
-	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass()};
+	std::unique_ptr<DescriptorSetLayout> globalSetLayout = DescriptorSetLayout::Builder(m_device)
+		.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+		.build();
+
+	std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
+	for(size_t i = 0; i < globalDescriptorSets.size(); i++) {
+		VkDescriptorBufferInfo bufferInfo = uniformBufferObjectBuffers[i]->descriptorInfo();
+		DescriptorWriter(*globalSetLayout, *m_globalPool)
+			.writeBuffer(0, &bufferInfo)
+			.build(globalDescriptorSets[i]);
+	}
+
+	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
 	Camera camera{};
 
 	GameObject viewerObject = GameObject::createGameObject();
@@ -76,7 +94,7 @@ void Application::run() {
 
 		if(VkCommandBuffer commandBuffer = m_renderer.beginFrame()) {
 			int frameIndex = m_renderer.getFrameIndex();
-			FrameInfo frameInfo = {frameIndex, deltaTime, commandBuffer, camera};
+			FrameInfo frameInfo = {frameIndex, deltaTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
 
 			// Update
 			GlobalUniformBufferObject uniformBufferObject{};

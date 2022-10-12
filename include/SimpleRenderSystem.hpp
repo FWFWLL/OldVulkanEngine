@@ -18,7 +18,7 @@ namespace FFL {
 
 class SimpleRenderSystem {
 public:
-	SimpleRenderSystem(Device& p_device, VkRenderPass p_renderPass);
+	SimpleRenderSystem(Device& p_device, VkRenderPass p_renderPass, VkDescriptorSetLayout p_globalSetLayout);
 	~SimpleRenderSystem();
 
 	// Delete copy-constructor
@@ -32,7 +32,7 @@ private:
 	VkPipelineLayout m_pipelineLayout;
 	std::unique_ptr<Pipeline> m_pipeline;
 
-	void createPipelineLayout();
+	void createPipelineLayout(VkDescriptorSetLayout p_globalSetLayout);
 	void createPipeline(VkRenderPass p_renderPass);
 };
 

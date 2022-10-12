@@ -23,7 +23,7 @@ Buffer::~Buffer() {
 }
 
 VkResult Buffer::map(VkDeviceSize p_size, VkDeviceSize p_offset) {
-	assert(m_buffer && m_memory && "Can't call map on buffer before creation");
+	assert(m_buffer && m_memory && "Called map on buffer before creation");
 
 	return vkMapMemory(m_device.device(), m_memory, p_offset, p_size, 0, &m_mapped);
 }
