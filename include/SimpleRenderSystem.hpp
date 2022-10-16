@@ -25,7 +25,7 @@ public:
 	SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 	SimpleRenderSystem& operator=(const SimpleRenderSystem&) = delete;
 
-	void renderGameObjects(FrameInfo& p_frameInfo, std::vector<GameObject>& p_gameObjects);
+	void renderGameObjects(FrameInfo& p_frameInfo);
 private:
 	Device& m_device;
 

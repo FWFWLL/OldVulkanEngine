@@ -60,7 +60,7 @@ void Application::run() {
 	}
 
 	std::unique_ptr<DescriptorSetLayout> globalSetLayout = DescriptorSetLayout::Builder(m_device)
-		.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+		.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 		.build();
 
 	std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -97,7 +97,14 @@ void Application::run() {
 
 		if(VkCommandBuffer commandBuffer = m_renderer.beginFrame()) {
 			int frameIndex = m_renderer.getFrameIndex();
-			FrameInfo frameInfo = {frameIndex, deltaTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
+			FrameInfo frameInfo = {
+				frameIndex,
+				deltaTime,
+				commandBuffer,
+				camera,
+				globalDescriptorSets[frameIndex],
+				m_gameObjects
+			};
 
 			// Update
 			GlobalUniformBufferObject uniformBufferObject{};
@@ -107,7 +114,7 @@ void Application::run() {
 
 			// Render
 			m_renderer.beginSwapChainRenderPass(commandBuffer);
-			simpleRenderSystem.renderGameObjects(frameInfo, m_gameObjects);
+			simpleRenderSystem.renderGameObjects(frameInfo);
 			m_renderer.endSwapChainRenderPass(commandBuffer);
 			m_renderer.endFrame();
 		}
@@ -123,8 +130,7 @@ void Application::loadGameObjects() {
 	flatVase.model = model;
 	flatVase.transform.translation = {-0.5f, 0.5f, 0.0f};
 	flatVase.transform.scale = {3.0f, 1.5f, 3.0f};
-
-	m_gameObjects.push_back(std::move(flatVase));
+	m_gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
 	model = Model::createModelFromFile(m_device, "models/smooth_vase.obj");
 
@@ -132,8 +138,7 @@ void Application::loadGameObjects() {
 	smoothVase.model = model;
 	smoothVase.transform.translation = {0.5f, 0.5f, 0.0f};
 	smoothVase.transform.scale = {3.0f, 1.5f, 3.0f};
-
-	m_gameObjects.push_back(std::move(smoothVase));
+	m_gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
 	model = Model::createModelFromFile(m_device, "models/quad.obj");
 
@@ -141,8 +146,7 @@ void Application::loadGameObjects() {
 	floor.model = model;
 	floor.transform.translation = {0.0f, 0.5f, 0.0f};
 	floor.transform.scale = {3.0f, 1.0f, 3.0f};
-
-	m_gameObjects.push_back(std::move(floor));
+	m_gameObjects.emplace(floor.getId(), std::move(floor));
 }
 
 } // FFL

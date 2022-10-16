@@ -12,6 +12,7 @@
 // STD
 #include <memory>
 #include <sys/types.h>
+#include <unordered_map>
 
 namespace FFL {
 
@@ -27,6 +28,7 @@ struct TransformComponent {
 class GameObject {
 public:
 	using id_t = unsigned int;
+	using Map = std::unordered_map<id_t, GameObject>;
 
 	// Delete copy-constructor
 	GameObject(const GameObject&) = delete;
