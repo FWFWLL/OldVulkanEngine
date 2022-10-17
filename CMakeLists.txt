@@ -1,7 +1,7 @@
+cmake_minimum_required(VERSION 3.11.0)
+
 include(./.env.cmake OPTIONAL RESULT_VARIABLE LOCAL_ENV)
 message(STATUS "Local .env.cmake: ${LOCAL_ENV}")
-
-cmake_minimum_required(VERSION 3.11.0)
 
 set(NAME VulkanEngine)
 
@@ -54,7 +54,7 @@ endif()
 
 include_directories(external)
 
-# If TINYOBJ_PATH not specified in .env.cmake, try fetching from git repo
+# If TINYOBJ_PATH not specified in .env.cmake, fallback to external/
 if(NOT TINYOBJ_PATH)
 	message(STATUS "TINYOBJ_PATH not specified in .env.cmake, using external/tinyobjloader")
 	set(TINYOBJ_PATH external/tinyobjloader)
@@ -76,12 +76,20 @@ if(WIN32)
 		target_link_directories(${PROJECT_NAME} PUBLIC ${MINGW_PATH}/lib)
 	endif()
 
-	target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include ${Vulkan_INCLUDE_DIRS} ${TINYOBJ_PATH} ${GLFW_INCLUDE_DIRS} ${GLM_PATH})
+	target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include ${Vulkan_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLM_PATH} ${TINYOBJ_PATH})
 
 	target_link_directories(${PROJECT_NAME} PUBLIC ${Vulkan_LIBRARIES} ${GLFW_LIB})
 
 	target_link_libraries(${PROJECT_NAME} glfw3 vulkan-1)
+elseif(UNIX)
+	message(STATUS "CREATING BUILD FOR UNIX")
+
+	target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include ${Vulkan_LIBRARIES} ${GLFW_LIB} ${TINYOBJ_PATH})
+
+	target_link_libraries(${PROJECT_NAME} glfw3 vulkan-1)
 endif()
+
+####### COMPILING SHADERS #######
 
 find_program(GLSL_VALIDATOR glslangValidator HINTS ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} ${VULKAN_SDK_PATH}/Bin ${VULKAN_SDK_PATH}/Bin32 $ENV{VULKAN_SDK}/Bin/ $ENV{VULKAN_SDK}/Bin32/)
 

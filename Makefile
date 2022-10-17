@@ -12,6 +12,7 @@ $(BUILD_DIR):
 
 clean:
 	@cmake --build $(BUILD_DIR) --target clean -- --no-print-directory
+	@rm -rf $(BUILD_DIR)
 
 run: all
 	@cd build && ./VulkanEngine
