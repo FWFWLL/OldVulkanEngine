@@ -77,8 +77,8 @@ void Pipeline::createGraphicsPipeline(const PipelineConfigInfo& p_configInfo, co
 	shaderStages[1].pNext = nullptr;
 	shaderStages[1].pSpecializationInfo = nullptr;
 
-	std::vector<VkVertexInputBindingDescription> bindingDescriptions = Model::Vertex::getBindingDescriptions();
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+	const std::vector<VkVertexInputBindingDescription>& bindingDescriptions = p_configInfo.bindingDescriptions;
+	const std::vector<VkVertexInputAttributeDescription>& attributeDescriptions = p_configInfo.attributeDescriptions;
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -187,6 +187,9 @@ void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& p_configInfo) {
 	p_configInfo.dynamicStateInfo.pDynamicStates = p_configInfo.dynamicStateEnables.data();
 	p_configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(p_configInfo.dynamicStateEnables.size());
 	p_configInfo.dynamicStateInfo.flags = 0;
+
+	p_configInfo.bindingDescriptions = Model::Vertex::getBindingDescriptions();
+	p_configInfo.attributeDescriptions = Model::Vertex::getAttributeDescriptions();
 }
 
 void Pipeline::bind(VkCommandBuffer p_commandBuffer) {

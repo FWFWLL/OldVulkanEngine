@@ -7,18 +7,20 @@
 #include "GameObject.hpp"
 #include "KeyboardMovementController.hpp"
 #include "Pipeline.hpp"
-#include "SimpleRenderSystem.hpp"
 #include "SwapChain.hpp"
+#include "Systems/SimpleRenderSystem.hpp"
+#include "Systems/PointLightSystem.hpp"
 
 // Libraries
+#define GLFW_INCLUDE_VULKAN
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <GLFW/glfw3.h>
 #include <glm/common.hpp>
+#include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <glm/fwd.hpp>
-#include <GLFW/glfw3.h>
 #include <glm/trigonometric.hpp>
 #include <vulkan/vulkan_core.h>
 
@@ -35,10 +37,11 @@
 namespace FFL {
 
 struct GlobalUniformBufferObject {
-	glm::mat4 projectionView{1.0f};
-	glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // W is intensity
-	glm::vec3 lightPosition{-1.0f}; // Ignore W
-	alignas(16) glm::vec4 lightColor{1.0f}; // W is light intensity
+	glm::mat4 projection{1.0f};
+	glm::mat4 view{1.0f};
+	glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f};
+	glm::vec3 lightPosition{-1.0f};
+	alignas(16) glm::vec4 lightColor{1.0f};
 };
 
 Application::Application() {
@@ -53,7 +56,7 @@ Application::Application() {
 Application::~Application() {}
 
 void Application::run() {
-	std::vector<std::unique_ptr<Buffer>> uniformBufferObjectBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
+	std::vector<std::unique_ptr<Buffer>> uniformBufferObjectBuffers{SwapChain::MAX_FRAMES_IN_FLIGHT};
 	for(std::unique_ptr<Buffer>& ubo : uniformBufferObjectBuffers) {
 		ubo = std::make_unique<Buffer>(m_device, sizeof(GlobalUniformBufferObject), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, m_device.properties.limits.minUniformBufferOffsetAlignment);
 		ubo->map();
@@ -72,6 +75,8 @@ void Application::run() {
 	}
 
 	SimpleRenderSystem simpleRenderSystem{m_device, m_renderer.getSwapchainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+	PointLightSystem pointLightSystem{m_device, m_renderer.getSwapchainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+
 	Camera camera{};
 
 	GameObject viewerObject = GameObject::createGameObject();
@@ -108,13 +113,15 @@ void Application::run() {
 
 			// Update
 			GlobalUniformBufferObject uniformBufferObject{};
-			uniformBufferObject.projectionView = camera.getProjection() * camera.getView();
+			uniformBufferObject.projection = camera.getProjection();
+			uniformBufferObject.view = camera.getView();
 			uniformBufferObjectBuffers[frameIndex]->writeToBuffer(&uniformBufferObject);
 			uniformBufferObjectBuffers[frameIndex]->flush();
 
 			// Render
 			m_renderer.beginSwapChainRenderPass(commandBuffer);
 			simpleRenderSystem.renderGameObjects(frameInfo);
+			pointLightSystem.render(frameInfo);
 			m_renderer.endSwapChainRenderPass(commandBuffer);
 			m_renderer.endFrame();
 		}

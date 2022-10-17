@@ -12,7 +12,7 @@
 namespace FFL {
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT* p_callbackData, void*) {
-	std::cerr << "validation layer: " << p_callbackData->pMessage << std::endl;
+	std::cerr << "Validation Layer: " << p_callbackData->pMessage << std::endl;
 	return VK_FALSE;
 }
 
@@ -98,7 +98,9 @@ void Device::createInstance() {
 }
 
 void Device::setupDebugMessenger() {
-	if(!enableValidationLayers) return;
+	if(!enableValidationLayers) {
+		return;
+	}
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
 	populateDebugMessengerCreateInfo(createInfo);
@@ -160,12 +162,9 @@ void Device::createLogicalDevice() {
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
 	createInfo.pEnabledFeatures = &deviceFeatures;
-
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(m_deviceExtensions.size());
 	createInfo.ppEnabledExtensionNames = m_deviceExtensions.data();
 
