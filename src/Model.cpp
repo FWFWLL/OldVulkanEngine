@@ -17,6 +17,10 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 namespace std {
 
 template<>
@@ -55,12 +59,14 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::getAttributeDescri
 }
 
 void Model::Builder::loadModel(const std::string& p_filePath) {
+	std::string enginePath = ENGINE_DIR + p_filePath;
+
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, p_filePath.c_str())) {
+	if(!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, enginePath.c_str())) {
 		throw std::runtime_error(warn + err);
 	}
 

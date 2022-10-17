@@ -12,6 +12,10 @@
 #include <cassert>
 #include <vector>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 namespace FFL {
 
 Pipeline::Pipeline(Device& p_device, const PipelineConfigInfo& p_configInfo, const std::string& p_vertPath, const std::string& p_fragPath) : m_device{p_device} {
@@ -25,10 +29,11 @@ Pipeline::~Pipeline() {
 }
 
 std::vector<char> Pipeline::readFile(const std::string& p_filePath) {
-	std::ifstream file(p_filePath, std::ios::ate | std::ios::binary);
+	std::string enginePath = ENGINE_DIR + p_filePath;
+	std::ifstream file(enginePath, std::ios::ate | std::ios::binary);
 
 	if(!file.is_open()) {
-		throw std::runtime_error("failed to open file: " + p_filePath);
+		throw std::runtime_error("failed to open file: " + enginePath);
 	}
 
 	size_t fileSize = static_cast<size_t>(file.tellg());
