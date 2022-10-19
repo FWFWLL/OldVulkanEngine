@@ -1,4 +1,5 @@
 #include "GameObject.hpp"
+#include <memory>
 
 namespace FFL {
 
@@ -64,6 +65,16 @@ glm::mat3 TransformComponent::normalMatrix() {
 			invScale.z * (c1 * c2),
 		},
 	};
+}
+
+GameObject GameObject::makePointLight(float p_intensity, float p_radius, glm::vec3 p_color) {
+	GameObject gameObject = GameObject::createGameObject();
+	gameObject.color = p_color;
+	gameObject.transform.scale.x = p_radius;
+	gameObject.pointLight = std::make_unique<PointLightComponent>();
+	gameObject.pointLight->lightIntensity = p_intensity;
+
+	return gameObject;
 }
 
 }

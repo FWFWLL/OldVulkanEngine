@@ -16,6 +16,10 @@
 
 namespace FFL {
 
+struct PointLightComponent {
+	float lightIntensity = 1.0f;
+};
+
 struct TransformComponent {
 	glm::vec3 translation = {};
 	glm::vec3 scale = {1.0f, 1.0f, 1.0f};
@@ -38,9 +42,14 @@ public:
 	GameObject(GameObject&&) = default;
 	GameObject& operator=(GameObject&&) = default;
 
-	std::shared_ptr<Model> model = {};
+	static GameObject makePointLight(float p_intensity = 10.0f, float p_radius = 0.1f, glm::vec3 p_color = glm::vec3{1.0f});
+
 	glm::vec3 color = {};
 	TransformComponent transform = {};
+
+	// Optional pointer components
+	std::shared_ptr<Model> model = {};
+	std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
 	static GameObject createGameObject() {
 		static id_t currentId = 0;

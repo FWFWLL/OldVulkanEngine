@@ -25,6 +25,7 @@ public:
 	PointLightSystem(const PointLightSystem&) = delete;
 	PointLightSystem& operator=(const PointLightSystem&) = delete;
 
+	void update(FrameInfo& p_frameInfo, GlobalUniformBufferObject& p_uniformBufferObject);
 	void render(FrameInfo& p_frameInfo);
 private:
 	Device& m_device;

@@ -10,6 +10,7 @@
 #include "SwapChain.hpp"
 #include "Systems/SimpleRenderSystem.hpp"
 #include "Systems/PointLightSystem.hpp"
+#include "glm/ext/matrix_transform.hpp"
 
 // Libraries
 #define GLFW_INCLUDE_VULKAN
@@ -35,14 +36,6 @@
 #include <vector>
 
 namespace FFL {
-
-struct GlobalUniformBufferObject {
-	glm::mat4 projection{1.0f};
-	glm::mat4 view{1.0f};
-	glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f};
-	glm::vec3 lightPosition{-1.0f};
-	alignas(16) glm::vec4 lightColor{1.0f};
-};
 
 Application::Application() {
 	m_globalPool = DescriptorPool::Builder(m_device)
@@ -115,6 +108,7 @@ void Application::run() {
 			GlobalUniformBufferObject uniformBufferObject{};
 			uniformBufferObject.projection = camera.getProjection();
 			uniformBufferObject.view = camera.getView();
+			pointLightSystem.update(frameInfo, uniformBufferObject);
 			uniformBufferObjectBuffers[frameIndex]->writeToBuffer(&uniformBufferObject);
 			uniformBufferObjectBuffers[frameIndex]->flush();
 
@@ -154,6 +148,23 @@ void Application::loadGameObjects() {
 	floor.transform.translation = {0.0f, 0.5f, 0.0f};
 	floor.transform.scale = {3.0f, 1.0f, 3.0f};
 	m_gameObjects.emplace(floor.getId(), std::move(floor));
+
+	std::vector<glm::vec3> lightColors = {
+		{1.0f, 0.1f, 0.1f},
+		{0.1f, 0.1f, 1.0f},
+		{0.1f, 1.0f, 0.1f},
+		{1.0f, 1.0f, 0.1f},
+		{0.1f, 1.0f, 1.0f},
+		{1.0f, 0.1f, 1.0f},
+	};
+
+	for(size_t i = 0; i < lightColors.size(); i++) {
+		GameObject pointLight = GameObject::makePointLight(0.2f);
+		pointLight.color = lightColors[i];
+		glm::mat4 rotateLight = glm::rotate(glm::mat4{1.0f}, (i * glm::two_pi<float>()) / lightColors.size(), {0.0f, -1.0f, 0.0f});
+		pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+		m_gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+	}
 }
 
 } // FFL
