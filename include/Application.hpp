@@ -15,8 +15,8 @@ namespace FFL {
 
 class Application {
 public:
-	static constexpr uint32_t SCREEN_WIDTH = 640;
-	static constexpr uint32_t SCREEN_HEIGHT = 640;
+	static constexpr uint32_t SCREEN_WIDTH = 800;
+	static constexpr uint32_t SCREEN_HEIGHT = 800;
 
 	Application();
 	~Application();

@@ -13,6 +13,7 @@ class Camera {
 public:
 	const glm::mat4& getProjection() const {return m_projectionMatrix;}
 	const glm::mat4& getView() const {return m_viewMatrix;}
+	const glm::mat4& getInverseView() const {return m_inverseViewMatrix;}
 
 	void setOrthographicProjection(float p_left, float p_right, float p_top, float p_bottom, float p_near, float p_far);
 	void setPerspectiveProjection(float p_fovY, float p_aspect, float p_near, float p_far);
@@ -22,6 +23,7 @@ public:
 private:
 	glm::mat4 m_projectionMatrix{1.0f};
 	glm::mat4 m_viewMatrix{1.0f};
+	glm::mat4 m_inverseViewMatrix{1.0f};
 };
 
 } // FFL

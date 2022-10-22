@@ -108,6 +108,7 @@ void Application::run() {
 			GlobalUniformBufferObject uniformBufferObject{};
 			uniformBufferObject.projection = camera.getProjection();
 			uniformBufferObject.view = camera.getView();
+			uniformBufferObject.inverseView = camera.getInverseView();
 			pointLightSystem.update(frameInfo, uniformBufferObject);
 			uniformBufferObjectBuffers[frameIndex]->writeToBuffer(&uniformBufferObject);
 			uniformBufferObjectBuffers[frameIndex]->flush();
